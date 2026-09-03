@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shining Dining — Single File Demo (with Food Gallery)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --green:#7f9a4f;
+      --green-dark:#394024;
+      --accent:#2f2f2f;
+      --muted:#9a9a9a;
+      --bg:#f6f6f6;
+      --card-radius:18px;
+      --max-width:1200px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:#111;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .grid-bg{
+      background-image:
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 80px 80px, 80px 80px;
+    }
+
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:24px;
+    }
+
+    header{
+      background:#efefef;
+      border-bottom:1px solid rgba(0,0,0,0.06);
+      position:sticky;
+      top:0;
+      z-index:50;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:18px 12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-family:"Playfair Display", serif;
+      color:#3a3a3a;
+      font-size:20px;
+      letter-spacing:0.5px;
+    }
+    .brand .dot{
+      width:8px;height:8px;border-radius:50%;background:var(--green);
+      display:inline-block;margin-right:6px;
+    }
+    nav{
+      margin-left:auto;
+      display:flex;
+      gap:28px;
+      align-items:center;
+      font-weight:600;
+      color:#222;
+      font-size:14px;
+    }
+    .contact-btn{
+      background:#262626;color:#fff;padding:10px 18px;border-radius:28px;
+      font-weight:700;box-shadow:none;border:none;cursor:pointer;
+    }
+
+    /* Hero */
+    .hero{
+      padding:60px 0 40px;
+    }
+    .hero-inner{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:40px;
+      align-items:start;
+    }
+
+    .hero-left{padding-top:20px;}
+    .hero-title{
+      font-family:"Playfair Display", serif;
+      font-size:84px;
+      line-height:0.9;
+      color:#1e1e1e;
+      margin:0 0 16px 0;
+      font-weight:700;
+    }
+    .hero-title .green{ color:var(--green); display:block; }
+    .hero-sub{ color:var(--muted); max-width:420px; font-size:16px; line-height:1.7; }
+
+    /* Products row */
+    .products{ display:flex; gap:28px; margin-top:86px; }
+    .products .text{ flex:1; max-width:420px; }
+    .products h3{ color:var(--green); letter-spacing:2px; font-size:13px; margin:0 0 14px 0; font-weight:700; }
+    .products h2{ font-family:"Playfair Display", serif; font-size:36px; margin:0 0 18px 0; font-weight:700; }
+    .products p{ color:var(--muted); line-height:1.7 }
+    .discover{ display:inline-block; margin-top:16px; padding-bottom:6px; border-bottom:2px solid rgba(0,0,0,0.08); font-weight:700; }
+
+    .cards{ display:flex; gap:20px; align-items:stretch; margin-left:20px; }
+    .card{ width:220px; height:260px; border-radius:16px; color:#fff; padding:28px 20px; position:relative; display:flex; flex-direction:column; justify-content:flex-end; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+    .card .num{ position:absolute; top:14px; left:18px; font-size:12px; opacity:0.5 }
+    .card .kanji{ font-family:"Playfair Display", serif; font-size:72px; opacity:0.95; line-height:0.9 }
+    .card .label{ margin-top:10px; font-weight:700 }
+    .card .sub{ font-size:12px; opacity:0.8; margin-top:6px }
+    .card.green{ background:linear-gradient(135deg,var(--green) 0%, #6a7f3f 40%); color:#f5f5f5 }
+    .card.olive{ background:linear-gradient(135deg,#3d452b 0%, #2e3525 100%); color:#f5f5f5 }
+    .card.dark{ background:#232323; color:#ddd }
+
+    /* Food gallery */
+    .gallery{
+      padding:56px 24px;
+      background:transparent;
+    }
+    .gallery .title{
+      display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:22px;
+    }
+    .gallery h3{ color:var(--green); letter-spacing:2px; font-size:13px; margin:0; font-weight:700; }
+    .gallery h2{ font-family:"Playfair Display", serif; font-size:36px; margin:0; }
+    .gallery-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:18px;
+    }
+    .food{
+      background:white;
+      border-radius:14px;
+      overflow:hidden;
+      position:relative;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,0.06);
+    }
+    .food img{
+      width:100%;
+      height:260px;
+      object-fit:cover;
+      display:block;
+      transition:transform .35s ease;
+    }
+    .food:hover img{ transform:scale(1.03); }
+    .food figcaption{
+      padding:14px 16px;
+      background:white;
+      font-size:14px;
+      color:#222;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .food .korean{ font-family:"Playfair Display", serif; font-size:18px; color:#222; }
+    .food .en{ font-size:12px; color:var(--muted); }
+
+    /* Lightbox */
+    .lightbox{
+      position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,0.7); z-index:1000;
+      padding:30px;
+    }
+    .lightbox.open{ display:grid; }
+    .lightbox .box{
+      max-width:1100px; width:100%; border-radius:10px; overflow:hidden; background:#111; color:#fff;
+      box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    }
+    .lightbox img{ width:100%; height:auto; display:block; }
+    .lightbox .meta{ padding:16px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .lightbox .meta .title{ font-family:"Playfair Display", serif; font-size:20px; }
+    .lightbox .close{ background:transparent;border:0;color:#ddd;font-size:18px;cursor:pointer;padding:6px 10px; }
+
+    /* Dark success */
+    .success{ margin-top:64px; background:#121212; color:#ddd; padding:70px 0; }
+    .success .container{ display:grid; grid-template-columns: 1fr 1fr; gap:40px; align-items:center; }
+    .success .visual{ background:radial-gradient( circle at 20% 30%, rgba(127,154,79,0.25) 0%, rgba(0,0,0,0.6) 60%), #111; border-radius:20px; padding:32px; min-height:340px; display:flex; align-items:flex-end; position:relative; overflow:hidden; }
+    .big-kanji{ font-family:"Playfair Display", serif; font-size:110px; color:#fff; opacity:0.95; margin:0 0 8px 8px; }
+    .small-desc{ color:rgba(255,255,255,0.7); font-size:14px; margin-top:8px }
+    .success .content h4{ color:var(--green); letter-spacing:3px; margin:0 0 10px 0; font-size:13px }
+    .success .content h2{ font-family:"Playfair Display", serif; font-size:36px; margin:0 0 18px 0; color:#fff; line-height:1.1; }
+    .kpis{ display:flex; gap:16px; margin-top:18px }
+    .kpi{ background:rgba(255,255,255,0.03); padding:18px; border-radius:12px; width:120px; text-align:center; color:#ddd; font-weight:700; }
+    .kpi small{ display:block; font-weight:400; color:#bdbdbd; font-size:12px; margin-top:8px }
+
+    /* Franchise */
+    .franchise{ padding:80px 0; }
+    .franchise .inner{ display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:center; }
+    .franchise h4{ color:var(--green); letter-spacing:3px; margin:0 0 10px 0; font-size:13px }
+    .franchise h2{ font-family:"Playfair Display",serif; font-size:40px; margin:0 0 16px 0 }
+    .franchise .steps{ display:grid; grid-template-columns:1fr 1fr; gap:18px }
+    .step{ background:white; border-radius:14px; padding:22px; border:1px solid rgba(0,0,0,0.06) }
+    .step .num{ color:var(--green); font-weight:700; font-size:13px }
+    .cta{ display:inline-block; background:#262626; color:#fff; padding:14px 24px; border-radius:28px; margin-top:18px; text-decoration:none; font-weight:700; }
+
+    .spacer{ height:80px }
+
+    @media (max-width:1100px){
+      .hero-inner{ grid-template-columns:1fr }
+      .success .container{ grid-template-columns:1fr }
+      .franchise .inner{ grid-template-columns:1fr }
+      .products{ flex-direction:column }
+      .cards{ margin-left:0; overflow:auto; padding-bottom:12px }
+      .gallery-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width:520px){
+      .hero-title{ font-size:44px }
+      .card{ width:180px; height:220px }
+      .big-kanji{ font-size:72px }
+      .gallery-grid{ grid-template-columns: 1fr; }
+      .food img{ height:200px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="topbar container">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="brand"><span class="dot"></span>shining dining.</div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a href="#" style="text-decoration:none;color:inherit">SHINING</a>
+        <a href="#" style="text-decoration:none;color:inherit">MENU</a>
+        <a href="#" style="text-decoration:none;color:inherit">EVENT</a>
+        <a href="#" style="text-decoration:none;color:inherit">고객센터</a>
+        <a href="#" style="text-decoration:none;color:inherit">프랜차이즈</a>
+        <button class="contact-btn">CONTACT</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero grid-bg">
+      <div class="container hero-inner">
+        <div class="hero-left">
+          <h1 class="hero-title">A meal with sincerity,<span class="green">a warm table.</span></h1>
+          <p class="hero-sub">셰프의 건강한 고집으로 완성된 샤이닝 다이닝의 한 끼. 정성과 건강을 밥상에 담습니다.</p>
+
+          <div class="products" aria-hidden="false">
+            <div class="text">
+              <h3>OUR PRODUCTS</h3>
+              <h2>셰프의 건강한 고집</h2>
+              <p>엄선된 식재료와 셰프의 정성이 만나, 매일 새로운 한 끼를 완성합니다. 건강과 맛을 동시에 잃지 않는 샤이닝만의 메뉴 철학을 경험해 보세요.</p>
+              <a class="discover" href="#">DISCOVER MORE →</a>
+            </div>
+
+            <div class="cards" aria-hidden="true">
+              <div class="card green">
+                <div class="num">01</div>
+                <div class="kanji">味</div>
+                <div class="label">숯불 향 버섯</div>
+                <div class="sub">Charcoal Mushroom</div>
+              </div>
+              <div class="card olive">
+                <div class="num">02</div>
+                <div class="kanji">鮮</div>
+                <div class="label">신선한 스시</div>
+                <div class="sub">Fresh Sushi</div>
+              </div>
+              <div class="card dark">
+                <div class="num">03</div>
+                <div class="kanji">火</div>
+                <div class="label">그릴드 디시</div>
+                <div class="sub">Grilled Dish</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <aside style="padding:20px">
+          <div style="writing-mode:vertical-rl; text-orientation:mixed; transform:translateY(20px); color:var(--green-dark); font-weight:700; opacity:0.9; font-family:'Playfair Display', serif;">
+            정성을 담은 한 끼 따뜻한 밥상
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- FOOD GALLERY (added) -->
+    <section class="gallery">
+      <div class="container">
+        <div class="title">
+          <div>
+            <h3>OUR MENU</h3>
+            <h2>맛있는 요리들</h2>
+          </div>
+          <div style="color:var(--muted)">클릭해서 확대보기</div>
+        </div>
+
+        <!-- IMPORTANT: save your images next to this file as food1.jpg ... food4.jpg -->
+        <div class="gallery-grid" role="list">
+          <figure class="food" data-title="Grilled Steak" data-kor="스테이크" tabindex="0">
+            <img src="food1.jpg" alt="Grilled steak with vegetables">
+            <figcaption><span class="korean">스테이크</span><span class="en">Grilled Steak</span></figcaption>
+          </figure>
+
+          <figure class="food" data-title="Bento Box" data-kor="도시락" tabindex="0">
+            <img src="food2.jpg" alt="Bento box with rice and fish">
+            <figcaption><span class="korean">도시락</span><span class="en">Bento Box</span></figcaption>
+          </figure>
+
+          <figure class="food" data-title="Assorted Mushrooms" data-kor="버섯" tabindex="0">
+            <img src="food3.jpg" alt="Assorted mushrooms on a board">
+            <figcaption><span class="korean">버섯</span><span class="en">Assorted Mushrooms</span></figcaption>
+          </figure>
+
+          <figure class="food" data-title="Ramen" data-kor="라멘" tabindex="0">
+            <img src="food4.jpg" alt="A steaming bowl of ramen">
+            <figcaption><span class="korean">라멘</span><span class="en">Ramen</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lightbox overlay -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-hidden="true">
+      <div class="box" role="document">
+        <button class="close" id="lb-close" aria-label="Close">✕</button>
+        <img id="lb-img" src="" alt="">
+        <div class="meta">
+          <div class="title"><span id="lb-kor" style="font-family:'Playfair Display',serif"></span> — <small id="lb-en" style="font-size:13px;color:#ddd"></small></div>
+          <div style="color:#aaa;font-size:13px">Esc to close</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success / dark section -->
+    <section class="success">
+      <div class="container">
+        <div class="visual" aria-hidden="true">
+          <div style="position:absolute;left:18px;top:18px;color:rgba(255,255,255,0.7);font-size:13px">• SINCE 2008</div>
+          <div style="flex:1"></div>
+          <div style="padding-bottom:20px;">
+            <div class="big-kanji">誠</div>
+            <div class="small-desc">정직한 조리법, 남다른 철학, 밥상 위에 완성되는 신뢰.</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <h4>SUCCESS STORY</h4>
+          <h2>남다른 철학으로 차별화된 샤이닝만의 성공 경쟁력</h2>
+          <p style="color:rgba(255,255,255,0.7);line-height:1.7">샤이닝 다이닝은 건강한 식재료와 정직한 조리법을 기반으로 합니다. 고객의 밥상에 대한 책임감은 곧 브랜드의 경쟁력입니다. 남다른 철학으로 만들어낸 한 끼는, 결국 고객의 신뢰로 돌아옵니다.</p>
+
+          <div class="kpis" role="list">
+            <div class="kpi"><div style="font-size:20px">120+</div><small>매장 운영</small></div>
+            <div class="kpi"><div style="font-size:20px">15년</div><small>브랜드 역사</small></div>
+            <div class="kpi"><div style="font-size:20px">98%</div><small>가맹 만족도</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Franchise -->
+    <section class="franchise container">
+      <div class="inner">
+        <div>
+          <h4>FRANCHISE GUIDE</h4>
+          <h2>창업의 첫걸음, 샤이닝과 함께하세요.</h2>
+          <p style="color:var(--muted);line-height:1.7">검증된 운영 노하우와 차별화된 메뉴 경쟁력. 샤이닝 다이닝의 가맹 시스템이 당신의 성공적인 창업을 안내합니다.</p>
+          <a class="cta" href="#">DISCOVER MORE</a>
+        </div>
+
+        <div class="steps" aria-hidden="false">
+          <div class="step">
+            <div class="num">01</div>
+            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">상담 신청</h3>
+            <p style="color:var(--muted);margin-top:8px">온라인 문의로 시작</p>
+          </div>
+
+          <div class="step">
+            <div class="num">02</div>
+            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">사업 타당성</h3>
+            <p style="color:var(--muted);margin-top:8px">상권 및 수익 분석</p>
+          </div>
+
+          <div class="step">
+            <div class="num">03</div>
+            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">계약 체결</h3>
+            <p style="color:var(--muted);margin-top:8px">가맹 계약 및 보증금</p>
+          </div>
+
+          <div class="step">
+            <div class="num">04</div>
+            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">오픈 준비</h3>
+            <p style="color:var(--muted);margin-top:8px">인테리어 · 교육 · 오픈</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="spacer"></div>
+  </main>
+
+  <script>
+    // Basic nav demo handlers
+    document.querySelectorAll('nav a').forEach(a=>{
+      a.addEventListener('click', (e)=>{ e.preventDefault(); alert('Навигация — демо.'); });
+    });
+    document.querySelector('.contact-btn').addEventListener('click', ()=> alert('Contact — демо.'));
+
+    // Lightbox logic
+    const foods = document.querySelectorAll('.food');
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbKor = document.getElementById('lb-kor');
+    const lbEn = document.getElementById('lb-en');
+    const lbClose = document.getElementById('lb-close');
+
+    function openLightbox(src, kor, en, alt){
+      lbImg.src = src;
+      lbImg.alt = alt || en || kor || '';
+      lbKor.textContent = kor || '';
+      lbEn.textContent = en || '';
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden','false');
+    }
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden','true');
+      lbImg.src = '';
+    }
+
+    foods.forEach((f, idx)=>{
+      const img = f.querySelector('img');
+      const kor = f.dataset.kor || f.querySelector('.korean')?.textContent || '';
+      const en = f.dataset.title || f.querySelector('.en')?.textContent || '';
+      f.addEventListener('click', ()=> openLightbox(img.src, kor, en, img.alt));
+      f.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(img.src, kor, en, img.alt);} });
+    });
+
+    lbClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e)=>{
+      if(e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>
