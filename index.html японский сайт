@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Shining Dining — Single File Demo (with Food Gallery)</title>
+  <title>Shining Dining</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
 
@@ -14,24 +14,42 @@
       --accent:#2f2f2f;
       --muted:#9a9a9a;
       --bg:#f6f6f6;
+      --surface:#ffffff;
+      --text:#111111;
+      --header-bg:#efefef;
       --card-radius:18px;
       --max-width:1200px;
+      --shadow:0 8px 20px rgba(0,0,0,0.06);
+      --ease:cubic-bezier(.22,.85,.32,1);
+    }
+    [data-theme="dark"]{
+      --bg:#141410;
+      --surface:#1d1d18;
+      --text:#eeeee8;
+      --header-bg:#1a1a15;
+      --muted:#9a9a90;
+      --shadow:0 8px 24px rgba(0,0,0,0.4);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family:"Noto Sans KR", "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       background:var(--bg);
-      color:#111;
+      color:var(--text);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
+      transition:background .35s var(--ease), color .35s var(--ease);
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
     }
 
     .grid-bg{
       background-image:
-        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(127,154,79,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127,154,79,0.05) 1px, transparent 1px);
       background-size: 80px 80px, 80px 80px;
     }
 
@@ -41,69 +59,95 @@
       padding:24px;
     }
 
+    a{color:inherit}
+    button{font-family:inherit}
+    :focus-visible{outline:2px solid var(--green); outline-offset:2px;}
+
     header{
-      background:#efefef;
+      background:var(--header-bg);
       border-bottom:1px solid rgba(0,0,0,0.06);
       position:sticky;
       top:0;
       z-index:50;
+      transition:background .35s var(--ease);
     }
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:16px;
-      padding:18px 12px;
+      padding:16px 12px;
     }
     .brand{
       display:flex;
       align-items:center;
       gap:12px;
       font-family:"Playfair Display", serif;
-      color:#3a3a3a;
+      color:var(--text);
       font-size:20px;
       letter-spacing:0.5px;
+      background:none;border:none;cursor:pointer;padding:0;
     }
     .brand .dot{
       width:8px;height:8px;border-radius:50%;background:var(--green);
       display:inline-block;margin-right:6px;
     }
-    nav{
+    nav.mainnav{
       margin-left:auto;
       display:flex;
-      gap:28px;
+      gap:26px;
       align-items:center;
       font-weight:600;
-      color:#222;
+      color:var(--text);
       font-size:14px;
     }
+    nav.mainnav a{ text-decoration:none; position:relative; padding-bottom:3px; }
+    nav.mainnav a::after{
+      content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--green);
+      transition:right .28s var(--ease);
+    }
+    nav.mainnav a:hover::after{ right:0; }
+
+    .icon-btn{
+      background:transparent;border:none;cursor:pointer;color:var(--text);
+      width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      position:relative; transition:background .2s var(--ease), transform .2s var(--ease);
+    }
+    .icon-btn:hover{ background:rgba(127,154,79,0.15); transform:translateY(-1px); }
+    .icon-btn svg{ width:19px;height:19px; }
+    .icon-row{ display:flex; align-items:center; gap:4px; }
+    .badge{
+      position:absolute; top:2px; right:2px; background:var(--green); color:#fff;
+      font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center; padding:0 3px;
+      transform:scale(0); transition:transform .25s var(--ease);
+    }
+    .badge.show{ transform:scale(1); }
+    .badge.bump{ animation:bump .35s var(--ease); }
+    @keyframes bump{ 0%{transform:scale(1)} 40%{transform:scale(1.5)} 100%{transform:scale(1)} }
+
     .contact-btn{
       background:#262626;color:#fff;padding:10px 18px;border-radius:28px;
       font-weight:700;box-shadow:none;border:none;cursor:pointer;
+      transition:transform .2s var(--ease), background .2s var(--ease);
     }
+    .contact-btn:hover{ transform:translateY(-2px); background:var(--green-dark); }
+
+    .hamburger{ display:none; }
 
     /* Hero */
-    .hero{
-      padding:60px 0 40px;
-    }
-    .hero-inner{
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:40px;
-      align-items:start;
-    }
-
+    .hero{ padding:60px 0 40px; }
+    .hero-inner{ display:grid; grid-template-columns: 1fr 420px; gap:40px; align-items:start; }
     .hero-left{padding-top:20px;}
     .hero-title{
       font-family:"Playfair Display", serif;
-      font-size:84px;
-      line-height:0.9;
-      color:#1e1e1e;
-      margin:0 0 16px 0;
-      font-weight:700;
+      font-size:84px; line-height:0.9; color:var(--text); margin:0 0 16px 0; font-weight:700;
     }
     .hero-title .green{ color:var(--green); display:block; }
     .hero-sub{ color:var(--muted); max-width:420px; font-size:16px; line-height:1.7; }
+
+    .reveal-load{ opacity:0; transform:translateY(22px); animation:reveal .8s var(--ease) forwards; }
+    @keyframes reveal{ to{opacity:1; transform:translateY(0);} }
 
     /* Products row */
     .products{ display:flex; gap:28px; margin-top:86px; }
@@ -111,10 +155,11 @@
     .products h3{ color:var(--green); letter-spacing:2px; font-size:13px; margin:0 0 14px 0; font-weight:700; }
     .products h2{ font-family:"Playfair Display", serif; font-size:36px; margin:0 0 18px 0; font-weight:700; }
     .products p{ color:var(--muted); line-height:1.7 }
-    .discover{ display:inline-block; margin-top:16px; padding-bottom:6px; border-bottom:2px solid rgba(0,0,0,0.08); font-weight:700; }
+    .discover{ display:inline-block; margin-top:16px; padding-bottom:6px; border-bottom:2px solid rgba(127,154,79,0.35); font-weight:700; text-decoration:none; }
 
     .cards{ display:flex; gap:20px; align-items:stretch; margin-left:20px; }
-    .card{ width:220px; height:260px; border-radius:16px; color:#fff; padding:28px 20px; position:relative; display:flex; flex-direction:column; justify-content:flex-end; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+    .card{ width:220px; height:260px; border-radius:16px; color:#fff; padding:28px 20px; position:relative; display:flex; flex-direction:column; justify-content:flex-end; box-shadow:var(--shadow); transition:transform .3s var(--ease); }
+    .card:hover{ transform:translateY(-6px); }
     .card .num{ position:absolute; top:14px; left:18px; font-size:12px; opacity:0.5 }
     .card .kanji{ font-family:"Playfair Display", serif; font-size:72px; opacity:0.95; line-height:0.9 }
     .card .label{ margin-top:10px; font-weight:700 }
@@ -124,57 +169,47 @@
     .card.dark{ background:#232323; color:#ddd }
 
     /* Food gallery */
-    .gallery{
-      padding:56px 24px;
-      background:transparent;
-    }
-    .gallery .title{
-      display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:22px;
-    }
+    .gallery{ padding:56px 24px; background:transparent; }
+    .gallery .title{ display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:22px; }
     .gallery h3{ color:var(--green); letter-spacing:2px; font-size:13px; margin:0; font-weight:700; }
     .gallery h2{ font-family:"Playfair Display", serif; font-size:36px; margin:0; }
-    .gallery-grid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:18px;
-    }
+    .gallery-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:22px; }
     .food{
-      background:white;
-      border-radius:14px;
-      overflow:hidden;
-      position:relative;
-      cursor:pointer;
-      box-shadow:0 8px 20px rgba(0,0,0,0.06);
+      background:var(--surface); border-radius:14px; overflow:hidden; position:relative;
+      box-shadow:var(--shadow);
+      opacity:0; transform:translateY(24px) scale(.98);
+      transition:opacity .6s var(--ease), transform .6s var(--ease), box-shadow .3s var(--ease);
     }
-    .food img{
-      width:100%;
-      height:260px;
-      object-fit:cover;
-      display:block;
-      transition:transform .35s ease;
+    .food.in-view{ opacity:1; transform:translateY(0) scale(1); }
+    .food:hover{ box-shadow:0 16px 34px rgba(0,0,0,0.14); }
+    .food .imgwrap{ position:relative; overflow:hidden; cursor:pointer; }
+    .food img{ width:100%; height:230px; object-fit:cover; display:block; transition:transform .5s var(--ease); }
+    .food:hover img{ transform:scale(1.06); }
+    .food figcaption{ padding:16px 18px 18px; }
+    .food .en{ font-family:"Montserrat", sans-serif; font-weight:700; font-size:15px; color:var(--text); display:block; }
+    .food .korean{ font-family:"Playfair Display", serif; font-size:13px; color:var(--muted); display:block; margin-top:2px; }
+    .food .price-row{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+    .food .price{ font-weight:700; color:var(--green-dark); }
+    [data-theme="dark"] .food .price{ color:var(--green); }
+    .add-btn{
+      background:var(--accent); color:#fff; border:none; border-radius:22px; padding:9px 16px;
+      font-size:13px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+      transition:transform .2s var(--ease), background .2s var(--ease);
     }
-    .food:hover img{ transform:scale(1.03); }
-    .food figcaption{
-      padding:14px 16px;
-      background:white;
-      font-size:14px;
-      color:#222;
-      display:flex; justify-content:space-between; align-items:center;
+    .add-btn:hover{ background:var(--green-dark); transform:translateY(-1px); }
+    .add-btn:active{ transform:scale(.95); }
+    [data-theme="dark"] .add-btn{ background:var(--green); }
+
+    .fly-thumb{
+      position:fixed; z-index:900; border-radius:50%; object-fit:cover; pointer-events:none;
+      transition:transform .7s cubic-bezier(.3,.7,.4,1), opacity .7s ease, left .7s cubic-bezier(.3,.7,.4,1), top .7s cubic-bezier(.3,.7,.4,1), width .7s ease, height .7s ease;
     }
-    .food .korean{ font-family:"Playfair Display", serif; font-size:18px; color:#222; }
-    .food .en{ font-size:12px; color:var(--muted); }
 
     /* Lightbox */
-    .lightbox{
-      position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,0.7); z-index:1000;
-      padding:30px;
-    }
+    .lightbox{ position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,0.75); z-index:1000; padding:30px; }
     .lightbox.open{ display:grid; }
-    .lightbox .box{
-      max-width:1100px; width:100%; border-radius:10px; overflow:hidden; background:#111; color:#fff;
-      box-shadow:0 20px 60px rgba(0,0,0,0.6);
-    }
-    .lightbox img{ width:100%; height:auto; display:block; }
+    .lightbox .box{ max-width:1000px; width:100%; border-radius:14px; overflow:hidden; background:#111; color:#fff; box-shadow:0 20px 60px rgba(0,0,0,0.6); opacity:0; transform:scale(.94); animation:pop .3s var(--ease) forwards; }
+    .lightbox img{ width:100%; max-height:70vh; object-fit:cover; display:block; }
     .lightbox .meta{ padding:16px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
     .lightbox .meta .title{ font-family:"Playfair Display", serif; font-size:20px; }
     .lightbox .close{ background:transparent;border:0;color:#ddd;font-size:18px;cursor:pointer;padding:6px 10px; }
@@ -197,11 +232,152 @@
     .franchise h4{ color:var(--green); letter-spacing:3px; margin:0 0 10px 0; font-size:13px }
     .franchise h2{ font-family:"Playfair Display",serif; font-size:40px; margin:0 0 16px 0 }
     .franchise .steps{ display:grid; grid-template-columns:1fr 1fr; gap:18px }
-    .step{ background:white; border-radius:14px; padding:22px; border:1px solid rgba(0,0,0,0.06) }
+    .step{
+      background:var(--surface); border-radius:14px; padding:22px; border:1px solid rgba(0,0,0,0.06);
+      opacity:0; transform:translateY(18px); transition:opacity .55s var(--ease), transform .55s var(--ease);
+    }
+    .step.in-view{ opacity:1; transform:translateY(0); }
     .step .num{ color:var(--green); font-weight:700; font-size:13px }
-    .cta{ display:inline-block; background:#262626; color:#fff; padding:14px 24px; border-radius:28px; margin-top:18px; text-decoration:none; font-weight:700; }
+    .cta{ display:inline-block; background:#262626; color:#fff; padding:14px 24px; border-radius:28px; margin-top:18px; text-decoration:none; font-weight:700; transition:transform .2s var(--ease); }
+    .cta:hover{ transform:translateY(-2px); }
 
-    .spacer{ height:80px }
+    footer.site-footer{ padding:30px 24px 50px; text-align:center; color:var(--muted); font-size:13px; }
+
+    /* ===== Overlay / Modals / Drawer ===== */
+    .overlay{
+      position:fixed; inset:0; background:rgba(10,10,8,0.5); z-index:800;
+      opacity:0; pointer-events:none; transition:opacity .3s var(--ease);
+    }
+    .overlay.show{ opacity:1; pointer-events:auto; }
+
+    .modal{
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-46%) scale(.96); z-index:900;
+      background:var(--surface); color:var(--text); border-radius:20px; width:min(420px, 92vw);
+      padding:30px 28px; box-shadow:0 24px 60px rgba(0,0,0,0.3);
+      opacity:0; pointer-events:none; transition:opacity .3s var(--ease), transform .3s var(--ease);
+      max-height:88vh; overflow-y:auto;
+    }
+    .modal.show{ opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+    .modal-close{ position:absolute; top:16px; right:16px; }
+    .modal h2{ font-family:"Playfair Display", serif; font-size:26px; margin:0 0 6px 0; }
+    .modal .sub{ color:var(--muted); font-size:13px; margin-bottom:20px; }
+
+    .tabs{ display:flex; gap:8px; margin-bottom:20px; background:rgba(127,154,79,0.1); padding:4px; border-radius:12px; }
+    .tab-btn{ flex:1; background:transparent; border:none; padding:9px 0; border-radius:9px; font-weight:700; cursor:pointer; color:var(--muted); font-size:13px; transition:background .2s var(--ease), color .2s var(--ease); }
+    .tab-btn.active{ background:var(--surface); color:var(--text); box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+
+    .field{ margin-bottom:14px; }
+    .field label{ display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:6px; letter-spacing:.3px; }
+    .field input, .field select{
+      width:100%; padding:11px 13px; border-radius:10px; border:1px solid rgba(0,0,0,0.12);
+      background:var(--bg); color:var(--text); font-size:14px; font-family:inherit;
+      transition:border-color .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .field input:focus, .field select:focus{ border-color:var(--green); box-shadow:0 0 0 3px rgba(127,154,79,0.18); outline:none; }
+    .field-row{ display:flex; gap:10px; }
+    .field-row .field{ flex:1; }
+
+    .primary-btn{
+      width:100%; background:var(--accent); color:#fff; border:none; padding:13px; border-radius:12px;
+      font-weight:700; font-size:14px; cursor:pointer; transition:background .2s var(--ease), transform .2s var(--ease);
+    }
+    .primary-btn:hover{ background:var(--green-dark); transform:translateY(-1px); }
+    .primary-btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+    .ghost-btn{
+      width:100%; background:transparent; color:var(--text); border:1px solid rgba(0,0,0,0.15); padding:12px;
+      border-radius:12px; font-weight:700; font-size:14px; cursor:pointer; margin-top:10px; transition:background .2s var(--ease);
+    }
+    .ghost-btn:hover{ background:rgba(127,154,79,0.1); }
+    .switch-link{ text-align:center; margin-top:16px; font-size:13px; color:var(--green); background:none; border:none; cursor:pointer; text-decoration:underline; }
+    .error-msg{ color:#b3403a; font-size:12.5px; margin:-6px 0 12px; min-height:1em; }
+    .account-chip{ display:flex; align-items:center; justify-content:space-between; background:rgba(127,154,79,0.1); padding:14px; border-radius:12px; margin-bottom:16px; }
+
+    /* Cart drawer */
+    .drawer{
+      position:fixed; top:0; right:0; height:100%; width:min(420px, 92vw); background:var(--surface); color:var(--text);
+      z-index:900; box-shadow:-20px 0 50px rgba(0,0,0,0.25); display:flex; flex-direction:column;
+      transform:translateX(105%); transition:transform .38s var(--ease);
+    }
+    .drawer.show{ transform:translateX(0); }
+    .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:22px 22px 14px; border-bottom:1px solid rgba(0,0,0,0.08); }
+    .drawer-head h2{ font-family:"Playfair Display", serif; font-size:22px; margin:0; }
+    .drawer-body{ flex:1; overflow-y:auto; padding:16px 22px; }
+    .drawer-foot{ padding:18px 22px 24px; border-top:1px solid rgba(0,0,0,0.08); }
+    .cart-empty{ text-align:center; color:var(--muted); padding:60px 10px; font-size:14px; }
+    .cart-item{ display:flex; gap:12px; padding:14px 0; border-bottom:1px solid rgba(0,0,0,0.06); }
+    .cart-item img{ width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0; }
+    .cart-item .info{ flex:1; min-width:0; }
+    .cart-item .name{ font-weight:700; font-size:14px; }
+    .cart-item .sub{ color:var(--muted); font-size:12px; }
+    .qty-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
+    .qty-btn{ width:24px; height:24px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); background:transparent; cursor:pointer; font-weight:700; color:var(--text); line-height:1; }
+    .qty-btn:hover{ background:rgba(127,154,79,0.15); }
+    .remove-btn{ background:none; border:none; color:var(--muted); font-size:12px; cursor:pointer; text-decoration:underline; margin-left:auto; }
+    .cart-item .linetotal{ font-weight:700; white-space:nowrap; }
+    .subtotal-row{ display:flex; justify-content:space-between; font-size:15px; font-weight:700; margin-bottom:14px; }
+
+    /* Checkout steps */
+    .checkout-steps-nav{ display:flex; gap:6px; margin-bottom:20px; }
+    .checkout-steps-nav span{ height:4px; flex:1; border-radius:2px; background:rgba(0,0,0,0.1); transition:background .3s var(--ease); }
+    .checkout-steps-nav span.active{ background:var(--green); }
+    .co-summary-row{ display:flex; justify-content:space-between; font-size:13px; padding:6px 0; color:var(--muted); }
+    .co-summary-total{ display:flex; justify-content:space-between; font-size:16px; font-weight:700; padding-top:10px; margin-top:6px; border-top:1px solid rgba(0,0,0,0.08); }
+
+    .success-check{ display:flex; justify-content:center; margin:10px 0 18px; }
+    .success-check svg{ width:74px; height:74px; }
+    .success-check circle{ stroke:var(--green); stroke-width:3; fill:none; stroke-dasharray:166; stroke-dashoffset:166; animation:drawCircle .6s var(--ease) forwards; }
+    .success-check path{ stroke:var(--green); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:48; stroke-dashoffset:48; animation:drawCheck .4s var(--ease) .5s forwards; }
+    @keyframes drawCircle{ to{ stroke-dashoffset:0; } }
+    @keyframes drawCheck{ to{ stroke-dashoffset:0; } }
+    .order-number{ text-align:center; font-weight:700; color:var(--green-dark); margin-bottom:6px; }
+    [data-theme="dark"] .order-number{ color:var(--green); }
+
+    /* Settings */
+    .lang-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:22px; }
+    .lang-opt{
+      display:flex; align-items:center; gap:10px; padding:12px; border-radius:12px; border:1px solid rgba(0,0,0,0.12);
+      background:var(--bg); cursor:pointer; font-weight:700; font-size:13px; transition:border-color .2s var(--ease), background .2s var(--ease);
+    }
+    .lang-opt.active{ border-color:var(--green); background:rgba(127,154,79,0.12); }
+    .lang-opt .flag{ font-size:18px; }
+    .theme-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; }
+    .theme-toggle{ position:relative; width:50px; height:28px; border-radius:16px; background:#ccc; border:none; cursor:pointer; transition:background .25s var(--ease); }
+    .theme-toggle::after{ content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; transition:transform .25s var(--ease); box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+    .theme-toggle.on{ background:var(--green); }
+    .theme-toggle.on::after{ transform:translateX(22px); }
+
+    /* Toasts */
+    .toast-stack{ position:fixed; bottom:22px; right:22px; z-index:1200; display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+    .toast{
+      background:#232323; color:#fff; padding:13px 18px; border-radius:12px; font-size:13.5px; font-weight:600;
+      box-shadow:0 12px 30px rgba(0,0,0,0.25); display:flex; align-items:center; gap:10px;
+      transform:translateX(120%); opacity:0; transition:transform .4s var(--ease), opacity .4s var(--ease);
+      max-width:300px;
+    }
+    .toast.show{ transform:translateX(0); opacity:1; }
+    .toast .dot{ width:8px;height:8px;border-radius:50%;background:var(--green); flex-shrink:0; }
+
+
+    /* ===== Owner Admin Panel ===== */
+    .admin-fab{position:fixed;left:20px;bottom:20px;z-index:1100;display:none;align-items:center;gap:8px;background:#262626;color:#fff;border:0;border-radius:28px;padding:12px 16px;font-weight:700;cursor:pointer;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+    .admin-fab.show{display:flex}
+    .admin-panel{position:fixed;inset:0;z-index:1150;display:none;background:var(--bg);color:var(--text);overflow:auto}
+    .admin-panel.show{display:block}
+    .admin-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;background:var(--surface);border-bottom:1px solid rgba(0,0,0,.08)}
+    .admin-head h2{margin:0;font-family:"Playfair Display",serif}
+    .admin-wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .admin-grid{display:grid;grid-template-columns:360px 1fr;gap:22px;align-items:start}
+    .admin-card{background:var(--surface);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+    .admin-card h3{margin:0 0 16px;font-family:"Playfair Display",serif}
+    .admin-list{display:grid;gap:10px}
+    .admin-food{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:10px;border:1px solid rgba(0,0,0,.08);border-radius:12px}
+    .admin-food img{width:64px;height:64px;border-radius:10px;object-fit:cover}
+    .admin-food .meta{min-width:0}.admin-food .name{font-weight:700}.admin-food .price{color:var(--green-dark);font-size:13px;margin-top:3px}
+    .admin-delete{border:0;background:#f0e8e8;color:#9b3d3d;border-radius:9px;padding:8px 10px;cursor:pointer;font-weight:700}
+    .admin-note{color:var(--muted);font-size:12px;line-height:1.5;margin-top:10px}
+    .admin-login{max-width:420px;margin:12vh auto}
+    .admin-status{margin-bottom:16px;padding:10px 12px;border-radius:10px;background:rgba(127,154,79,.12);font-size:13px}
+    @media (max-width:820px){.admin-grid{grid-template-columns:1fr}.admin-wrap{padding:16px}.admin-food{grid-template-columns:52px 1fr auto}.admin-food img{width:52px;height:52px}.admin-fab{left:12px;bottom:12px}}
 
     @media (max-width:1100px){
       .hero-inner{ grid-template-columns:1fr }
@@ -211,68 +387,134 @@
       .cards{ margin-left:0; overflow:auto; padding-bottom:12px }
       .gallery-grid{ grid-template-columns: repeat(2, 1fr); }
     }
+    @media (max-width:820px){
+      nav.mainnav .navlinks{ display:none; }
+      .hamburger{
+        display:flex; background:none; border:none; cursor:pointer; width:36px; height:36px;
+        align-items:center; justify-content:center; color:var(--text);
+      }
+      .mobile-menu{
+        position:fixed; top:0; right:0; height:100%; width:min(280px,80vw); background:var(--surface);
+        z-index:950; box-shadow:-16px 0 40px rgba(0,0,0,0.2); transform:translateX(105%);
+        transition:transform .35s var(--ease); padding:24px; display:flex; flex-direction:column; gap:18px;
+      }
+      .mobile-menu.show{ transform:translateX(0); }
+      .mobile-menu a{ text-decoration:none; font-weight:700; font-size:16px; color:var(--text); }
+    }
     @media (max-width:520px){
-      .hero-title{ font-size:44px }
+      .hero-title{ font-size:40px }
       .card{ width:180px; height:220px }
       .big-kanji{ font-size:72px }
       .gallery-grid{ grid-template-columns: 1fr; }
       .food img{ height:200px; }
+      .modal{ padding:24px 20px; }
     }
-  </style>
+  
+.tg-support-button{
+  position:fixed;right:22px;bottom:22px;z-index:9998;
+  display:flex;align-items:center;gap:9px;padding:13px 18px;
+  border-radius:999px;text-decoration:none;color:#fff;
+  background:#229ED9;box-shadow:0 10px 30px rgba(0,0,0,.25);
+  font-weight:700;transition:.2s ease;
+}
+.tg-support-button:hover{transform:translateY(-2px);filter:brightness(1.06)}
+@media(max-width:600px){
+ .tg-support-button{right:14px;bottom:14px;padding:11px 15px;font-size:14px}
+}
+
+</style>
 </head>
 <body>
 
+<a class="tg-support-button" id="tg-support-button" href="https://t.me/Ordison" target="_blank" rel="noopener noreferrer" aria-label="Поддержка в Telegram">
+  <span>✈️</span><span>Поддержка</span>
+</a>
+
+
   <header>
     <div class="topbar container">
-      <div style="display:flex;align-items:center;gap:16px">
-        <div class="brand"><span class="dot"></span>shining dining.</div>
-      </div>
+      <button class="brand" id="logo-home"><span class="dot"></span>shining dining.</button>
 
-      <nav aria-label="Main navigation">
-        <a href="#" style="text-decoration:none;color:inherit">SHINING</a>
-        <a href="#" style="text-decoration:none;color:inherit">MENU</a>
-        <a href="#" style="text-decoration:none;color:inherit">EVENT</a>
-        <a href="#" style="text-decoration:none;color:inherit">고객센터</a>
-        <a href="#" style="text-decoration:none;color:inherit">프랜차이즈</a>
-        <button class="contact-btn">CONTACT</button>
+      <nav class="mainnav" aria-label="Main navigation">
+        <div class="navlinks" style="display:flex; gap:26px; align-items:center;">
+          <a href="#top" data-i18n="nav_home">Главная</a>
+          <a href="#menu" data-i18n="nav_menu">Меню</a>
+          <a href="#" id="nav-event" data-i18n="nav_event">Акции</a>
+          <a href="#" id="nav-support" data-i18n="nav_support">Поддержка</a>
+          <a href="#franchise" data-i18n="nav_franchise">Франшиза</a>
+        </div>
+
+        <div class="icon-row">
+          <button class="icon-btn" id="btn-lang" aria-label="Language" title="Language">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9s1.3-6.4 3.8-9z"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-account" aria-label="Account" title="Account">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-settings" aria-label="Settings" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.5-2-3.4-2.3.9a7.7 7.7 0 0 0-1.7-1L15 3.6h-4l-.4 2.4a7.7 7.7 0 0 0-1.7 1l-2.3-.9-2 3.4L6.6 11a7.7 7.7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9c.5.4 1.1.7 1.7 1l.4 2.4h4l.4-2.4c.6-.3 1.2-.6 1.7-1l2.3.9 2-3.4-2-1.5z"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-cart" aria-label="Cart" title="Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+            <span class="badge" id="cart-badge">0</span>
+          </button>
+          <button class="contact-btn" data-i18n="nav_contact">СВЯЗАТЬСЯ</button>
+          <button class="hamburger" id="btn-hamburger" aria-label="Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
       </nav>
     </div>
   </header>
 
-  <main>
+  <div class="mobile-menu" id="mobile-menu">
+    <button class="icon-btn" id="mobile-close" style="align-self:flex-end;" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <a href="#top" data-i18n="nav_home">Главная</a>
+    <a href="#menu" data-i18n="nav_menu">Меню</a>
+    <a href="#" id="nav-event-m" data-i18n="nav_event">Акции</a>
+    <a href="#" id="nav-support-m" data-i18n="nav_support">Поддержка</a>
+    <a href="#franchise" data-i18n="nav_franchise">Франшиза</a>
+  </div>
+
+  <main id="top">
 
     <!-- HERO -->
     <section class="hero grid-bg">
       <div class="container hero-inner">
         <div class="hero-left">
-          <h1 class="hero-title">A meal with sincerity,<span class="green">a warm table.</span></h1>
-          <p class="hero-sub">셰프의 건강한 고집으로 완성된 샤이닝 다이닝의 한 끼. 정성과 건강을 밥상에 담습니다.</p>
+          <h1 class="hero-title reveal-load" style="animation-delay:.05s">
+            <span data-i18n="hero_line1">Еда с искренностью,</span>
+            <span class="green" data-i18n="hero_line2">тёплый стол.</span>
+          </h1>
+          <p class="hero-sub reveal-load" style="animation-delay:.2s" data-i18n="hero_sub">Блюдо, созданное благодаря заботе шеф-повара о здоровье. Искренность и польза — на каждой тарелке Shining Dining.</p>
 
-          <div class="products" aria-hidden="false">
-            <div class="text">
-              <h3>OUR PRODUCTS</h3>
-              <h2>셰프의 건강한 고집</h2>
-              <p>엄선된 식재료와 셰프의 정성이 만나, 매일 새로운 한 끼를 완성합니다. 건강과 맛을 동시에 잃지 않는 샤이닝만의 메뉴 철학을 경험해 보세요.</p>
-              <a class="discover" href="#">DISCOVER MORE →</a>
+          <div class="products">
+            <div class="text reveal-load" style="animation-delay:.3s">
+              <h3 data-i18n="products_eyebrow">OUR PRODUCTS</h3>
+              <h2 data-i18n="products_title">Здоровая принципиальность шеф-повара</h2>
+              <p data-i18n="products_desc">Отборные продукты и забота шеф-повара создают новый вкус каждый день. Попробуйте философию меню Shining — там, где вкус не жертвует здоровьем.</p>
+              <a class="discover" href="#menu" data-i18n="discover_more">Узнать больше →</a>
             </div>
 
-            <div class="cards" aria-hidden="true">
+            <div class="cards reveal-load" style="animation-delay:.4s" aria-hidden="true">
               <div class="card green">
                 <div class="num">01</div>
                 <div class="kanji">味</div>
-                <div class="label">숯불 향 버섯</div>
+                <div class="label" data-i18n="card1_label">Угольный аромат грибов</div>
                 <div class="sub">Charcoal Mushroom</div>
               </div>
               <div class="card olive">
                 <div class="num">02</div>
                 <div class="kanji">鮮</div>
-                <div class="label">신선한 스시</div>
+                <div class="label" data-i18n="card2_label">Свежие суши</div>
                 <div class="sub">Fresh Sushi</div>
               </div>
               <div class="card dark">
                 <div class="num">03</div>
                 <div class="kanji">火</div>
-                <div class="label">그릴드 디시</div>
+                <div class="label" data-i18n="card3_label">Блюдо на гриле</div>
                 <div class="sub">Grilled Dish</div>
               </div>
             </div>
@@ -288,39 +530,18 @@
       </div>
     </section>
 
-    <!-- FOOD GALLERY (added) -->
-    <section class="gallery">
+    <!-- FOOD GALLERY / MENU -->
+    <section class="gallery" id="menu">
       <div class="container">
         <div class="title">
           <div>
-            <h3>OUR MENU</h3>
-            <h2>맛있는 요리들</h2>
+            <h3 data-i18n="menu_eyebrow">OUR MENU</h3>
+            <h2 data-i18n="menu_title">Вкусные блюда</h2>
           </div>
-          <div style="color:var(--muted)">클릭해서 확대보기</div>
+          <div style="color:var(--muted)" data-i18n="menu_hint">Нажмите на фото, чтобы увеличить</div>
         </div>
 
-        <!-- IMPORTANT: save your images next to this file as food1.jpg ... food4.jpg -->
-        <div class="gallery-grid" role="list">
-          <figure class="food" data-title="Grilled Steak" data-kor="스테이크" tabindex="0">
-            <img src="food1.jpg" alt="Grilled steak with vegetables">
-            <figcaption><span class="korean">스테이크</span><span class="en">Grilled Steak</span></figcaption>
-          </figure>
-
-          <figure class="food" data-title="Bento Box" data-kor="도시락" tabindex="0">
-            <img src="food2.jpg" alt="Bento box with rice and fish">
-            <figcaption><span class="korean">도시락</span><span class="en">Bento Box</span></figcaption>
-          </figure>
-
-          <figure class="food" data-title="Assorted Mushrooms" data-kor="버섯" tabindex="0">
-            <img src="food3.jpg" alt="Assorted mushrooms on a board">
-            <figcaption><span class="korean">버섯</span><span class="en">Assorted Mushrooms</span></figcaption>
-          </figure>
-
-          <figure class="food" data-title="Ramen" data-kor="라멘" tabindex="0">
-            <img src="food4.jpg" alt="A steaming bowl of ramen">
-            <figcaption><span class="korean">라멘</span><span class="en">Ramen</span></figcaption>
-          </figure>
-        </div>
+        <div class="gallery-grid" id="food-grid" role="list"></div>
       </div>
     </section>
 
@@ -330,8 +551,8 @@
         <button class="close" id="lb-close" aria-label="Close">✕</button>
         <img id="lb-img" src="" alt="">
         <div class="meta">
-          <div class="title"><span id="lb-kor" style="font-family:'Playfair Display',serif"></span> — <small id="lb-en" style="font-size:13px;color:#ddd"></small></div>
-          <div style="color:#aaa;font-size:13px">Esc to close</div>
+          <div class="title"><span id="lb-en"></span> — <small id="lb-kor" style="font-size:13px;color:#ddd"></small></div>
+          <div style="color:#aaa;font-size:13px">Esc</div>
         </div>
       </div>
     </div>
@@ -344,109 +565,1041 @@
           <div style="flex:1"></div>
           <div style="padding-bottom:20px;">
             <div class="big-kanji">誠</div>
-            <div class="small-desc">정직한 조리법, 남다른 철학, 밥상 위에 완성되는 신뢰.</div>
+            <div class="small-desc" data-i18n="success_smalldesc">Честные рецепты, особая философия, доверие, что рождается за столом.</div>
           </div>
         </div>
 
         <div class="content">
-          <h4>SUCCESS STORY</h4>
-          <h2>남다른 철학으로 차별화된 샤이닝만의 성공 경쟁력</h2>
-          <p style="color:rgba(255,255,255,0.7);line-height:1.7">샤이닝 다이닝은 건강한 식재료와 정직한 조리법을 기반으로 합니다. 고객의 밥상에 대한 책임감은 곧 브랜드의 경쟁력입니다. 남다른 철학으로 만들어낸 한 끼는, 결국 고객의 신뢰로 돌아옵니다.</p>
+          <h4 data-i18n="success_eyebrow">SUCCESS STORY</h4>
+          <h2 data-i18n="success_title">Уникальная философия — конкурентное преимущество Shining</h2>
+          <p style="color:rgba(255,255,255,0.7);line-height:1.7" data-i18n="success_desc">Shining Dining строит всё на честных рецептах и здоровых продуктах. Ответственность перед гостем — это и есть конкурентное преимущество бренда.</p>
 
           <div class="kpis" role="list">
-            <div class="kpi"><div style="font-size:20px">120+</div><small>매장 운영</small></div>
-            <div class="kpi"><div style="font-size:20px">15년</div><small>브랜드 역사</small></div>
-            <div class="kpi"><div style="font-size:20px">98%</div><small>가맹 만족도</small></div>
+            <div class="kpi"><div style="font-size:20px">120+</div><small data-i18n="kpi1">Ресторанов работает</small></div>
+            <div class="kpi"><div style="font-size:20px">15</div><small data-i18n="kpi2">Лет истории бренда</small></div>
+            <div class="kpi"><div style="font-size:20px">98%</div><small data-i18n="kpi3">Довольны франчайзи</small></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Franchise -->
-    <section class="franchise container">
+    <section class="franchise container" id="franchise">
       <div class="inner">
         <div>
-          <h4>FRANCHISE GUIDE</h4>
-          <h2>창업의 첫걸음, 샤이닝과 함께하세요.</h2>
-          <p style="color:var(--muted);line-height:1.7">검증된 운영 노하우와 차별화된 메뉴 경쟁력. 샤이닝 다이닝의 가맹 시스템이 당신의 성공적인 창업을 안내합니다.</p>
-          <a class="cta" href="#">DISCOVER MORE</a>
+          <h4 data-i18n="franchise_eyebrow">FRANCHISE GUIDE</h4>
+          <h2 data-i18n="franchise_title">Первый шаг к своему делу — вместе с Shining.</h2>
+          <p style="color:var(--muted);line-height:1.7" data-i18n="franchise_desc">Проверенный опыт управления и уникальное меню. Франчайзинговая система Shining Dining поможет вам успешно начать бизнес.</p>
+          <a class="cta" href="#" id="franchise-cta" data-i18n="discover_more">Узнать больше →</a>
         </div>
 
-        <div class="steps" aria-hidden="false">
-          <div class="step">
-            <div class="num">01</div>
-            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">상담 신청</h3>
-            <p style="color:var(--muted);margin-top:8px">온라인 문의로 시작</p>
-          </div>
-
-          <div class="step">
-            <div class="num">02</div>
-            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">사업 타당성</h3>
-            <p style="color:var(--muted);margin-top:8px">상권 및 수익 분석</p>
-          </div>
-
-          <div class="step">
-            <div class="num">03</div>
-            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">계약 체결</h3>
-            <p style="color:var(--muted);margin-top:8px">가맹 계약 및 보증금</p>
-          </div>
-
-          <div class="step">
-            <div class="num">04</div>
-            <h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif">오픈 준비</h3>
-            <p style="color:var(--muted);margin-top:8px">인테리어 · 교육 · 오픈</p>
-          </div>
+        <div class="steps">
+          <div class="step"><div class="num">01</div><h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif" data-i18n="step1_t">Заявка на консультацию</h3><p style="color:var(--muted);margin-top:8px" data-i18n="step1_d">Начните с онлайн-заявки</p></div>
+          <div class="step"><div class="num">02</div><h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif" data-i18n="step2_t">Оценка бизнеса</h3><p style="color:var(--muted);margin-top:8px" data-i18n="step2_d">Анализ локации и доходности</p></div>
+          <div class="step"><div class="num">03</div><h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif" data-i18n="step3_t">Заключение договора</h3><p style="color:var(--muted);margin-top:8px" data-i18n="step3_d">Договор франшизы и депозит</p></div>
+          <div class="step"><div class="num">04</div><h3 style="margin:8px 0 0 0;font-family:'Playfair Display',serif" data-i18n="step4_t">Подготовка к открытию</h3><p style="color:var(--muted);margin-top:8px" data-i18n="step4_d">Интерьер · обучение · открытие</p></div>
         </div>
       </div>
     </section>
 
-    <div class="spacer"></div>
+    <footer class="site-footer">
+      <div data-i18n="footer_text">© 2026 Shining Dining. Все права защищены.</div>
+    </footer>
   </main>
 
+  <!-- ===== Overlay ===== -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ===== Auth Modal ===== -->
+  <div class="modal" id="modal-auth" role="dialog" aria-hidden="true">
+    <button class="icon-btn modal-close" data-close-modal="modal-auth" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <div id="auth-logged-out">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-login" data-i18n="auth_login_tab">Вход</button>
+        <button class="tab-btn" id="tab-register" data-i18n="auth_register_tab">Регистрация</button>
+      </div>
+
+      <form id="form-login">
+        <div class="field"><label data-i18n="auth_email">Эл. почта</label><input type="email" id="login-email" required autocomplete="email"></div>
+        <div class="field"><label data-i18n="auth_password">Пароль</label><input type="password" id="login-password" required autocomplete="current-password" minlength="4"></div>
+        <div class="error-msg" id="login-error"></div>
+        <button type="submit" class="primary-btn" data-i18n="auth_login_btn">Войти</button>
+      </form>
+
+      <form id="form-register" style="display:none">
+        <div class="field"><label data-i18n="auth_name">Имя</label><input type="text" id="reg-name" required></div>
+        <div class="field"><label data-i18n="auth_email">Эл. почта</label><input type="email" id="reg-email" required></div>
+        <div class="field"><label data-i18n="auth_password">Пароль</label><input type="password" id="reg-password" required minlength="4"></div>
+        <div class="field"><label data-i18n="auth_confirm">Повторите пароль</label><input type="password" id="reg-confirm" required minlength="4"></div>
+        <div class="error-msg" id="register-error"></div>
+        <button type="submit" class="primary-btn" data-i18n="auth_register_btn">Создать аккаунт</button>
+      </form>
+    </div>
+
+    <div id="auth-logged-in" style="display:none">
+      <h2 data-i18n="auth_account_title">Ваш аккаунт</h2>
+      <div class="account-chip">
+        <div>
+          <div style="font-weight:700" id="account-name">—</div>
+          <div style="font-size:12px;color:var(--muted)" id="account-email">—</div>
+        </div>
+      </div>
+      <div class="sub" data-i18n="auth_orders_hint">Ваши заказы сохраняются локально в этом браузере.</div>
+      <button class="ghost-btn" id="btn-logout" data-i18n="auth_logout">Выйти</button>
+    </div>
+  </div>
+
+  <!-- ===== Cart Drawer ===== -->
+  <div class="drawer" id="drawer-cart" role="dialog" aria-hidden="true">
+    <div class="drawer-head">
+      <h2 data-i18n="cart_title">Корзина</h2>
+      <button class="icon-btn" data-close-modal="drawer-cart" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="cart-body"></div>
+    <div class="drawer-foot" id="cart-foot">
+      <div class="subtotal-row"><span data-i18n="cart_subtotal">Итого</span><span id="cart-total">0 ₩</span></div>
+      <button class="primary-btn" id="btn-checkout" data-i18n="cart_checkout">Оформить заказ</button>
+    </div>
+  </div>
+
+  <!-- ===== Checkout Modal ===== -->
+  <div class="modal" id="modal-checkout" role="dialog" aria-hidden="true">
+    <button class="icon-btn modal-close" data-close-modal="modal-checkout" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 data-i18n="checkout_title">Оформление заказа</h2>
+    <div class="checkout-steps-nav">
+      <span class="active" data-step="0"></span><span data-step="1"></span><span data-step="2"></span>
+    </div>
+
+    <!-- step 0: summary -->
+    <div class="co-step" data-step-panel="0">
+      <div id="co-summary"></div>
+      <button class="primary-btn" style="margin-top:16px" id="co-next-0" data-i18n="checkout_continue">Продолжить</button>
+    </div>
+
+    <!-- step 1: details -->
+    <div class="co-step" data-step-panel="1" style="display:none">
+      <form id="form-checkout-details">
+        <div class="field"><label data-i18n="auth_name">Имя</label><input type="text" id="co-name" required></div>
+        <div class="field"><label data-i18n="checkout_address">Адрес доставки</label><input type="text" id="co-address" required></div>
+        <div class="field"><label data-i18n="checkout_phone">Телефон</label><input type="tel" id="co-phone" required></div>
+        <button type="submit" class="primary-btn" data-i18n="checkout_continue">Продолжить</button>
+        <button type="button" class="ghost-btn" id="co-back-1" data-i18n="checkout_back">Назад</button>
+      </form>
+    </div>
+
+    <!-- step 2: payment -->
+    <div class="co-step" data-step-panel="2" style="display:none">
+      <h3 style="font-size:14px;margin:0 0 12px;color:var(--muted)" data-i18n="checkout_payment">Оплата</h3>
+      <form id="form-checkout-payment">
+        <div class="field"><label data-i18n="checkout_card">Номер карты</label><input type="text" id="co-card" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" required></div>
+        <div class="field-row">
+          <div class="field"><label data-i18n="checkout_expiry">Срок действия</label><input type="text" id="co-expiry" placeholder="MM/YY" maxlength="5" required></div>
+          <div class="field"><label>CVC</label><input type="text" id="co-cvc" inputmode="numeric" maxlength="3" placeholder="123" required></div>
+        </div>
+        <div class="error-msg" id="checkout-error"></div>
+        <button type="submit" class="primary-btn" data-i18n="checkout_place">Подтвердить заказ</button>
+        <button type="button" class="ghost-btn" id="co-back-2" data-i18n="checkout_back">Назад</button>
+      </form>
+    </div>
+
+    <!-- step 3: success -->
+    <div class="co-step" data-step-panel="3" style="display:none">
+      <div class="success-check">
+        <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-15"/></svg>
+      </div>
+      <h2 style="text-align:center" data-i18n="checkout_success_title">Заказ оформлен!</h2>
+      <div class="order-number" id="order-number"></div>
+      <p class="sub" style="text-align:center" data-i18n="checkout_success_desc">Спасибо! Мы уже готовим ваш заказ.</p>
+      <button class="primary-btn" id="co-finish" data-i18n="checkout_back_home">Вернуться на главную</button>
+    </div>
+  </div>
+
+  <!-- ===== Settings Modal ===== -->
+  <div class="modal" id="modal-settings" role="dialog" aria-hidden="true">
+    <button class="icon-btn modal-close" data-close-modal="modal-settings" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 data-i18n="settings_title">Настройки</h2>
+    <div class="sub" data-i18n="settings_lang_label">Язык</div>
+    <div class="lang-grid" id="lang-grid"></div>
+    <div class="theme-row">
+      <div>
+        <div style="font-weight:700" data-i18n="settings_theme_label">Тема</div>
+        <div style="font-size:12px;color:var(--muted)" id="theme-state-label" data-i18n="settings_theme_light">Светлая</div>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+    </div>
+    <button class="primary-btn" style="margin-top:8px" data-close-modal="modal-settings" data-i18n="settings_done">Готово</button>
+  </div>
+
+
+  <!-- ===== Owner Admin ===== -->
+  <button class="admin-fab" id="admin-fab" type="button">⚙ Админ-панель</button>
+  <section class="admin-panel" id="admin-panel" aria-hidden="true">
+    <div class="admin-head"><h2>Админ-панель</h2><button class="icon-btn" id="admin-close" type="button" aria-label="Закрыть">✕</button></div>
+    <div class="admin-wrap">
+      <div class="admin-card admin-login" id="admin-login-card">
+        <h3>Доступ владельца</h3>
+        <div class="sub">Панель открывается только после ввода пароля владельца.</div>
+        <div class="field"><label>Пароль</label><input id="admin-password" type="password" autocomplete="off" placeholder="Введите пароль"></div>
+        <div class="error-msg" id="admin-error"></div>
+        <button class="primary-btn" id="admin-login-btn" type="button">Войти</button>
+        <div class="admin-note">Меню этой версии хранится в браузере. Для настоящего публичного сайта лучше подключить серверную базу и авторизацию.</div>
+      </div>
+      <div id="admin-content" style="display:none">
+        <div class="admin-status">✓ Вы вошли как владелец. Новые блюда сразу появляются в меню и мобильной версии.</div>
+        <div class="admin-grid">
+          <div class="admin-card">
+            <h3>Добавить блюдо</h3>
+            <form id="admin-food-form">
+              <div class="field"><label>Название</label><input id="admin-name" type="text" required placeholder="Например: Паста с грибами"></div>
+              <div class="field"><label>Корейское название</label><input id="admin-kor" type="text" placeholder="Например: 버섯 파스타"></div>
+              <div class="field"><label>Цена, ₩</label><input id="admin-price" type="number" min="0" step="1" required placeholder="15000"></div>
+              <div class="field"><label>Ссылка на фото</label><input id="admin-img" type="url" required placeholder="https://..."></div>
+              <button class="primary-btn" type="submit">＋ Добавить блюдо</button>
+            </form>
+          </div>
+          <div class="admin-card">
+            <h3>Меню сайта</h3>
+            <div class="admin-list" id="admin-food-list"></div>
+            <div class="admin-note">Удаление блюда сразу убирает его из меню и из корзины.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toasts -->
+  <div class="toast-stack" id="toast-stack"></div>
+
   <script>
-    // Basic nav demo handlers
-    document.querySelectorAll('nav a').forEach(a=>{
-      a.addEventListener('click', (e)=>{ e.preventDefault(); alert('Навигация — демо.'); });
+  (function(){
+    "use strict";
+
+    /* ---------------- Translations ---------------- */
+    var LOCALE_TAG = { ru:'ru-RU', uk:'uk-UA', en:'en-US', ja:'ja-JP' };
+    var LANG_META = {
+      ru:{flag:'🇷🇺', label:'Русский'},
+      uk:{flag:'🇺🇦', label:'Українська'},
+      en:{flag:'🇬🇧', label:'English'},
+      ja:{flag:'🇯🇵', label:'日本語'}
+    };
+
+    var T = {
+      ru:{
+        nav_home:"Главная", nav_menu:"Меню", nav_event:"Акции", nav_support:"Поддержка", nav_franchise:"Франшиза", nav_contact:"СВЯЗАТЬСЯ",
+        hero_line1:"Еда с искренностью,", hero_line2:"тёплый стол.",
+        hero_sub:"Блюдо, созданное благодаря заботе шеф-повара о здоровье. Искренность и польза — на каждой тарелке Shining Dining.",
+        products_eyebrow:"OUR PRODUCTS", products_title:"Здоровая принципиальность шеф-повара",
+        products_desc:"Отборные продукты и забота шеф-повара создают новый вкус каждый день. Попробуйте философию меню Shining — там, где вкус не жертвует здоровьем.",
+        discover_more:"Узнать больше →",
+        card1_label:"Угольный аромат грибов", card2_label:"Свежие суши", card3_label:"Блюдо на гриле",
+        menu_eyebrow:"OUR MENU", menu_title:"Вкусные блюда", menu_hint:"Нажмите на фото, чтобы увеличить",
+        success_eyebrow:"SUCCESS STORY", success_title:"Уникальная философия — конкурентное преимущество Shining",
+        success_desc:"Shining Dining строит всё на честных рецептах и здоровых продуктах. Ответственность перед гостем — это и есть конкурентное преимущество бренда.",
+        success_smalldesc:"Честные рецепты, особая философия, доверие, что рождается за столом.",
+        kpi1:"Ресторанов работает", kpi2:"Лет истории бренда", kpi3:"Довольны франчайзи",
+        franchise_eyebrow:"FRANCHISE GUIDE", franchise_title:"Первый шаг к своему делу — вместе с Shining.",
+        franchise_desc:"Проверенный опыт управления и уникальное меню. Франчайзинговая система Shining Dining поможет вам успешно начать бизнес.",
+        step1_t:"Заявка на консультацию", step1_d:"Начните с онлайн-заявки",
+        step2_t:"Оценка бизнеса", step2_d:"Анализ локации и доходности",
+        step3_t:"Заключение договора", step3_d:"Договор франшизы и депозит",
+        step4_t:"Подготовка к открытию", step4_d:"Интерьер · обучение · открытие",
+        footer_text:"© 2026 Shining Dining. Все права защищены.",
+        food_steak:"Стейк на гриле", food_ramen:"Рамен", food_sushi:"Свежие суши", food_bibimbap:"Бибимбап", food_mushroom:"Грибы на углях", food_bento:"Бенто-бокс",
+        add_to_cart:"В корзину", toast_added:"Добавлено в корзину", toast_no_events:"Пока нет активных акций", toast_support:"Напишите нам: hello@shiningdining.example",
+        auth_login_tab:"Вход", auth_register_tab:"Регистрация", auth_email:"Эл. почта", auth_password:"Пароль", auth_name:"Имя", auth_confirm:"Повторите пароль",
+        auth_login_btn:"Войти", auth_register_btn:"Создать аккаунт", auth_account_title:"Ваш аккаунт", auth_orders_hint:"Ваши заказы сохраняются локально в этом браузере.", auth_logout:"Выйти",
+        toast_welcome_back:"С возвращением!", toast_account_created:"Аккаунт создан!", toast_logged_out:"Вы вышли из аккаунта",
+        err_login_fail:"Неверная почта или пароль", err_reg_exists:"Аккаунт с такой почтой уже есть", err_reg_mismatch:"Пароли не совпадают",
+        cart_title:"Корзина", cart_empty:"Ваша корзина пуста", cart_subtotal:"Итого", cart_checkout:"Оформить заказ", cart_continue:"Продолжить выбор",
+        checkout_title:"Оформление заказа", checkout_continue:"Продолжить", checkout_back:"Назад",
+        checkout_address:"Адрес доставки", checkout_phone:"Телефон", checkout_payment:"Оплата", checkout_card:"Номер карты", checkout_expiry:"Срок действия",
+        checkout_place:"Подтвердить заказ", checkout_success_title:"Заказ оформлен!", checkout_success_desc:"Спасибо! Мы уже готовим ваш заказ.", checkout_back_home:"Вернуться на главную",
+        checkout_order_prefix:"Номер заказа", err_card:"Проверьте номер карты (16 цифр)", err_expiry:"Проверьте срок действия (MM/YY)", err_cvc:"Проверьте CVC (3 цифры)",
+        settings_title:"Настройки", settings_lang_label:"Язык", settings_theme_label:"Тема", settings_theme_light:"Светлая", settings_theme_dark:"Тёмная", settings_done:"Готово",
+        hi_prefix:"Привет,"
+      },
+      uk:{
+        nav_home:"Головна", nav_menu:"Меню", nav_event:"Акції", nav_support:"Підтримка", nav_franchise:"Франшиза", nav_contact:"ЗВ'ЯЗОК",
+        hero_line1:"Їжа зі щирістю,", hero_line2:"теплий стіл.",
+        hero_sub:"Страва, створена завдяки турботі шеф-кухаря про здоров'я. Щирість і користь — на кожній тарілці Shining Dining.",
+        products_eyebrow:"OUR PRODUCTS", products_title:"Здорова принциповість шеф-кухаря",
+        products_desc:"Відібрані продукти та турбота шеф-кухаря створюють новий смак щодня. Спробуйте філософію меню Shining — там, де смак не жертвує здоров'ям.",
+        discover_more:"Дізнатися більше →",
+        card1_label:"Вугільний аромат грибів", card2_label:"Свіжі суші", card3_label:"Страва на грилі",
+        menu_eyebrow:"OUR MENU", menu_title:"Смачні страви", menu_hint:"Натисніть на фото, щоб збільшити",
+        success_eyebrow:"SUCCESS STORY", success_title:"Унікальна філософія — конкурентна перевага Shining",
+        success_desc:"Shining Dining будує все на чесних рецептах і здорових продуктах. Відповідальність перед гостем — це і є конкурентна перевага бренду.",
+        success_smalldesc:"Чесні рецепти, особлива філософія, довіра, що народжується за столом.",
+        kpi1:"Ресторанів працює", kpi2:"Років історії бренду", kpi3:"Задоволені франчайзі",
+        franchise_eyebrow:"FRANCHISE GUIDE", franchise_title:"Перший крок до власної справи — разом із Shining.",
+        franchise_desc:"Перевірений досвід управління та унікальне меню. Франчайзингова система Shining Dining допоможе вам успішно розпочати бізнес.",
+        step1_t:"Заявка на консультацію", step1_d:"Почніть з онлайн-заявки",
+        step2_t:"Оцінка бізнесу", step2_d:"Аналіз локації та прибутковості",
+        step3_t:"Укладання договору", step3_d:"Договір франшизи та депозит",
+        step4_t:"Підготовка до відкриття", step4_d:"Інтер'єр · навчання · відкриття",
+        footer_text:"© 2026 Shining Dining. Усі права захищені.",
+        food_steak:"Стейк на грилі", food_ramen:"Рамен", food_sushi:"Свіжі суші", food_bibimbap:"Бібімбап", food_mushroom:"Гриби на вугіллі", food_bento:"Бенто-бокс",
+        add_to_cart:"У кошик", toast_added:"Додано в кошик", toast_no_events:"Наразі немає активних акцій", toast_support:"Напишіть нам: hello@shiningdining.example",
+        auth_login_tab:"Вхід", auth_register_tab:"Реєстрація", auth_email:"Електронна пошта", auth_password:"Пароль", auth_name:"Ім'я", auth_confirm:"Повторіть пароль",
+        auth_login_btn:"Увійти", auth_register_btn:"Створити акаунт", auth_account_title:"Ваш акаунт", auth_orders_hint:"Ваші замовлення зберігаються локально в цьому браузері.", auth_logout:"Вийти",
+        toast_welcome_back:"З поверненням!", toast_account_created:"Акаунт створено!", toast_logged_out:"Ви вийшли з акаунта",
+        err_login_fail:"Невірна пошта або пароль", err_reg_exists:"Акаунт із такою поштою вже існує", err_reg_mismatch:"Паролі не збігаються",
+        cart_title:"Кошик", cart_empty:"Ваш кошик порожній", cart_subtotal:"Разом", cart_checkout:"Оформити замовлення", cart_continue:"Продовжити вибір",
+        checkout_title:"Оформлення замовлення", checkout_continue:"Продовжити", checkout_back:"Назад",
+        checkout_address:"Адреса доставки", checkout_phone:"Телефон", checkout_payment:"Оплата", checkout_card:"Номер картки", checkout_expiry:"Термін дії",
+        checkout_place:"Підтвердити замовлення", checkout_success_title:"Замовлення оформлено!", checkout_success_desc:"Дякуємо! Ми вже готуємо ваше замовлення.", checkout_back_home:"Повернутися на головну",
+        checkout_order_prefix:"Номер замовлення", err_card:"Перевірте номер картки (16 цифр)", err_expiry:"Перевірте термін дії (MM/YY)", err_cvc:"Перевірте CVC (3 цифри)",
+        settings_title:"Налаштування", settings_lang_label:"Мова", settings_theme_label:"Тема", settings_theme_light:"Світла", settings_theme_dark:"Темна", settings_done:"Готово",
+        hi_prefix:"Привіт,"
+      },
+      en:{
+        nav_home:"Home", nav_menu:"Menu", nav_event:"Events", nav_support:"Support", nav_franchise:"Franchise", nav_contact:"CONTACT",
+        hero_line1:"A meal with sincerity,", hero_line2:"a warm table.",
+        hero_sub:"A dish shaped by the chef's healthy dedication. Shining Dining brings sincerity and wellbeing to every table.",
+        products_eyebrow:"OUR PRODUCTS", products_title:"The chef's healthy dedication",
+        products_desc:"Carefully selected ingredients and the chef's dedication come together in a new dish every day. Experience Shining's menu philosophy, where flavor never sacrifices health.",
+        discover_more:"Discover more →",
+        card1_label:"Charcoal-Grilled Mushroom", card2_label:"Fresh Sushi", card3_label:"Grilled Dish",
+        menu_eyebrow:"OUR MENU", menu_title:"Delicious Dishes", menu_hint:"Click a photo to enlarge",
+        success_eyebrow:"SUCCESS STORY", success_title:"A distinctive philosophy behind Shining's competitive edge",
+        success_desc:"Shining Dining is built on honest recipes and healthy ingredients. Responsibility to every guest is the brand's real competitive edge.",
+        success_smalldesc:"Honest recipes, a distinctive philosophy, trust completed at the table.",
+        kpi1:"Locations running", kpi2:"Years of history", kpi3:"Franchisee satisfaction",
+        franchise_eyebrow:"FRANCHISE GUIDE", franchise_title:"Take your first step into business with Shining.",
+        franchise_desc:"Proven operating know-how and a distinctive menu. Shining Dining's franchise system guides you toward a successful launch.",
+        step1_t:"Consultation request", step1_d:"Start with an online inquiry",
+        step2_t:"Feasibility study", step2_d:"Location and profitability analysis",
+        step3_t:"Contract signing", step3_d:"Franchise agreement and deposit",
+        step4_t:"Opening preparation", step4_d:"Interior · training · launch",
+        footer_text:"© 2026 Shining Dining. All rights reserved.",
+        food_steak:"Grilled Steak", food_ramen:"Ramen", food_sushi:"Fresh Sushi", food_bibimbap:"Bibimbap", food_mushroom:"Charcoal Mushroom", food_bento:"Bento Box",
+        add_to_cart:"Add to cart", toast_added:"Added to cart", toast_no_events:"No promotions running right now", toast_support:"Reach us at hello@shiningdining.example",
+        auth_login_tab:"Log in", auth_register_tab:"Sign up", auth_email:"Email", auth_password:"Password", auth_name:"Name", auth_confirm:"Confirm password",
+        auth_login_btn:"Log in", auth_register_btn:"Create account", auth_account_title:"Your account", auth_orders_hint:"Your orders are stored locally in this browser.", auth_logout:"Log out",
+        toast_welcome_back:"Welcome back!", toast_account_created:"Account created!", toast_logged_out:"Logged out",
+        err_login_fail:"Incorrect email or password", err_reg_exists:"An account with this email already exists", err_reg_mismatch:"Passwords do not match",
+        cart_title:"Your cart", cart_empty:"Your cart is empty", cart_subtotal:"Subtotal", cart_checkout:"Checkout", cart_continue:"Continue browsing",
+        checkout_title:"Checkout", checkout_continue:"Continue", checkout_back:"Back",
+        checkout_address:"Delivery address", checkout_phone:"Phone number", checkout_payment:"Payment", checkout_card:"Card number", checkout_expiry:"Expiry",
+        checkout_place:"Place order", checkout_success_title:"Order placed!", checkout_success_desc:"Thank you! We're already preparing your order.", checkout_back_home:"Back to home",
+        checkout_order_prefix:"Order number", err_card:"Check the card number (16 digits)", err_expiry:"Check the expiry (MM/YY)", err_cvc:"Check the CVC (3 digits)",
+        settings_title:"Settings", settings_lang_label:"Language", settings_theme_label:"Theme", settings_theme_light:"Light", settings_theme_dark:"Dark", settings_done:"Done",
+        hi_prefix:"Hi,"
+      },
+      ja:{
+        nav_home:"ホーム", nav_menu:"メニュー", nav_event:"イベント", nav_support:"サポート", nav_franchise:"フランチャイズ", nav_contact:"お問い合わせ",
+        hero_line1:"誠実な一皿、", hero_line2:"温かい食卓。",
+        hero_sub:"シェフのこだわりが生んだ、健やかな一皿。真心と健康をお席まで、シャイニングダイニングがお届けします。",
+        products_eyebrow:"OUR PRODUCTS", products_title:"シェフの健康へのこだわり",
+        products_desc:"厳選された食材とシェフのこだわりが、毎日新しい一皿を生み出します。味と健康を両立させるシャイニングのメニュー哲学をご体験ください。",
+        discover_more:"もっと見る →",
+        card1_label:"炭火風味のきのこ", card2_label:"新鮮な寿司", card3_label:"グリル料理",
+        menu_eyebrow:"OUR MENU", menu_title:"美味しい料理たち", menu_hint:"写真をクリックすると拡大します",
+        success_eyebrow:"SUCCESS STORY", success_title:"独自の哲学が生むシャイニングの競争力",
+        success_desc:"シャイニングダイニングは誠実なレシピと健康的な食材を大切にしています。お客様への責任こそが、ブランドの本当の競争力です。",
+        success_smalldesc:"誠実な調理法と独自の哲学が、食卓の上で信頼へと変わる。",
+        kpi1:"運営店舗数", kpi2:"ブランドの歴史（年）", kpi3:"加盟店満足度",
+        franchise_eyebrow:"FRANCHISE GUIDE", franchise_title:"起業の第一歩を、シャイニングと共に。",
+        franchise_desc:"実証済みの運営ノウハウと差別化されたメニュー競争力。シャイニングダイニングのフランチャイズシステムが、あなたの開業を成功へ導きます。",
+        step1_t:"相談申込み", step1_d:"オンラインお問い合わせから開始",
+        step2_t:"事業性評価", step2_d:"商圏・収益分析",
+        step3_t:"契約締結", step3_d:"加盟契約と保証金",
+        step4_t:"オープン準備", step4_d:"内装・研修・開店",
+        footer_text:"© 2026 Shining Dining. All rights reserved.",
+        food_steak:"グリルステーキ", food_ramen:"ラーメン", food_sushi:"新鮮な寿司", food_bibimbap:"ビビンバ", food_mushroom:"炭火焼きのきのこ", food_bento:"弁当ボックス",
+        add_to_cart:"カートに入れる", toast_added:"カートに追加しました", toast_no_events:"現在開催中のキャンペーンはありません", toast_support:"お問い合わせ: hello@shiningdining.example",
+        auth_login_tab:"ログイン", auth_register_tab:"新規登録", auth_email:"メールアドレス", auth_password:"パスワード", auth_name:"お名前", auth_confirm:"パスワード（確認）",
+        auth_login_btn:"ログイン", auth_register_btn:"アカウント作成", auth_account_title:"アカウント", auth_orders_hint:"ご注文はこのブラウザにローカル保存されます。", auth_logout:"ログアウト",
+        toast_welcome_back:"おかえりなさい！", toast_account_created:"アカウントを作成しました！", toast_logged_out:"ログアウトしました",
+        err_login_fail:"メールアドレスまたはパスワードが違います", err_reg_exists:"このメールアドレスは既に登録されています", err_reg_mismatch:"パスワードが一致しません",
+        cart_title:"カート", cart_empty:"カートは空です", cart_subtotal:"小計", cart_checkout:"レジに進む", cart_continue:"買い物を続ける",
+        checkout_title:"ご注文手続き", checkout_continue:"次へ", checkout_back:"戻る",
+        checkout_address:"配達先住所", checkout_phone:"電話番号", checkout_payment:"お支払い", checkout_card:"カード番号", checkout_expiry:"有効期限",
+        checkout_place:"注文を確定する", checkout_success_title:"ご注文ありがとうございます！", checkout_success_desc:"ただいまご注文の準備をしています。", checkout_back_home:"ホームに戻る",
+        checkout_order_prefix:"注文番号", err_card:"カード番号をご確認ください（16桁）", err_expiry:"有効期限をご確認ください（MM/YY）", err_cvc:"セキュリティコードをご確認ください（3桁）",
+        settings_title:"設定", settings_lang_label:"言語", settings_theme_label:"テーマ", settings_theme_light:"ライト", settings_theme_dark:"ダーク", settings_done:"完了",
+        hi_prefix:"こんにちは、"
+      }
+    };
+
+    var DEFAULT_FOOD_ITEMS = [
+      { id:'steak', kor:'스테이크', key:'food_steak', price:18000, img:'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&w=900&q=80' },
+      { id:'ramen', kor:'라멘', key:'food_ramen', price:12000, img:'https://unsplash.com/photos/SdS_XZ2CBqo/download?force=true&w=900&q=80' },
+      { id:'sushi', kor:'스시', key:'food_sushi', price:22000, img:'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=900&q=80' },
+      { id:'bibimbap', kor:'비빔밥', key:'food_bibimbap', price:13000, img:'https://images.unsplash.com/photo-1741295017668-c8132acd6fc0?auto=format&fit=crop&w=900&q=80' },
+      { id:'mushroom', kor:'버섯 구이', key:'food_mushroom', price:15000, img:'https://unsplash.com/photos/L2iyrw_soPQ/download?force=true&w=900&q=80' },
+      { id:'bento', kor:'도시락', key:'food_bento', price:16000, img:'https://unsplash.com/photos/oVWgSI5GUTA/download?force=true&w=900&q=80' }
+    ];
+    var FOOD_ITEMS = (function(){
+      try{
+        var saved = JSON.parse(localStorage.getItem('sd_food_items') || 'null');
+        return Array.isArray(saved) && saved.length ? saved : DEFAULT_FOOD_ITEMS.slice();
+      }catch(e){ return DEFAULT_FOOD_ITEMS.slice(); }
+    })();
+
+
+    /* ---------------- State ---------------- */
+    var state = {
+      lang: 'ru',
+      theme: 'light',
+      cart: {},      // id -> qty
+      user: null,    // {name, email}
+      checkoutStep: 0,
+      checkoutDetails: {}
+    };
+
+
+    /* ===== Owner Admin ===== */
+    var ADMIN_PASSWORD = 'CHANGE-ME-2026';
+    var adminLoggedIn = false;
+
+    function saveFoodItems(){
+      try{ localStorage.setItem('sd_food_items', JSON.stringify(FOOD_ITEMS)); }catch(e){}
+    }
+    function makeFoodId(){
+      return 'custom_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+    }
+    function adminFoodName(item){
+      return item.customName || (T[state.lang] && T[state.lang][item.key]) || item.key || item.id;
+    }
+    function renderAdminFoodList(){
+      var list = document.getElementById('admin-food-list');
+      if(!list) return;
+      list.innerHTML = '';
+      FOOD_ITEMS.forEach(function(item){
+        var row = document.createElement('div');
+        row.className = 'admin-food';
+        row.innerHTML = '<img alt=""><div class="meta"><div class="name"></div><div class="price"></div></div><button class="admin-delete" type="button">Удалить</button>';
+        row.querySelector('img').src = item.img;
+        row.querySelector('img').setAttribute('data-kor', item.kor || '');
+        row.querySelector('img').onerror = function(){ window.__sdFallback(this); };
+        row.querySelector('.name').textContent = adminFoodName(item);
+        row.querySelector('.price').textContent = formatPrice(item.price);
+        row.querySelector('.admin-delete').addEventListener('click', function(){
+          if(!confirm('Удалить это блюдо из меню?')) return;
+          FOOD_ITEMS = FOOD_ITEMS.filter(function(f){ return f.id !== item.id; });
+          delete state.cart[item.id];
+          saveFoodItems(); saveCart();
+          renderFoodGrid(); renderCart(); updateCartBadge(); renderAdminFoodList();
+          showToast('Блюдо удалено');
+        });
+        list.appendChild(row);
+      });
+    }
+    function openAdmin(){
+      var p = document.getElementById('admin-panel');
+      p.classList.add('show'); p.setAttribute('aria-hidden','false');
+      document.getElementById('admin-error').textContent = '';
+      document.getElementById('admin-login-card').style.display = adminLoggedIn ? 'none' : 'block';
+      document.getElementById('admin-content').style.display = adminLoggedIn ? 'block' : 'none';
+      if(adminLoggedIn) renderAdminFoodList();
+    }
+    function closeAdmin(){
+      var p = document.getElementById('admin-panel');
+      p.classList.remove('show'); p.setAttribute('aria-hidden','true');
+    }
+    document.getElementById('admin-fab').addEventListener('click', openAdmin);
+    document.getElementById('admin-close').addEventListener('click', closeAdmin);
+    document.getElementById('admin-login-btn').addEventListener('click', function(){
+      var err = document.getElementById('admin-error');
+      if(document.getElementById('admin-password').value !== ADMIN_PASSWORD){
+        err.textContent = 'Неверный пароль'; return;
+      }
+      adminLoggedIn = true;
+      document.getElementById('admin-fab').classList.add('show');
+      openAdmin();
+      showToast('Добро пожаловать в админ-панель');
     });
-    document.querySelector('.contact-btn').addEventListener('click', ()=> alert('Contact — демо.'));
+    document.getElementById('admin-password').addEventListener('keydown', function(e){
+      if(e.key === 'Enter') document.getElementById('admin-login-btn').click();
+    });
+    document.getElementById('admin-food-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      if(!adminLoggedIn) return;
+      var name = document.getElementById('admin-name').value.trim();
+      var kor = document.getElementById('admin-kor').value.trim() || name;
+      var price = Number(document.getElementById('admin-price').value);
+      var img = document.getElementById('admin-img').value.trim();
+      if(!name || !Number.isFinite(price) || price < 0 || !img) return;
+      FOOD_ITEMS.push({id:makeFoodId(), kor:kor, key:'custom_food', customName:name, price:price, img:img});
+      saveFoodItems(); renderFoodGrid(); renderCart(); renderAdminFoodList();
+      e.target.reset(); showToast('Блюдо добавлено в меню');
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a'){ e.preventDefault(); openAdmin(); }
+    });
 
-    // Lightbox logic
-    const foods = document.querySelectorAll('.food');
-    const lightbox = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lb-img');
-    const lbKor = document.getElementById('lb-kor');
-    const lbEn = document.getElementById('lb-en');
-    const lbClose = document.getElementById('lb-close');
+    function loadState(){
+      try{
+        var lang = localStorage.getItem('sd_lang');
+        if(lang && T[lang]) state.lang = lang;
+        else {
+          var nav = (navigator.language || 'ru').slice(0,2).toLowerCase();
+          state.lang = T[nav] ? nav : 'ru';
+        }
+      }catch(e){}
+      try{ state.theme = localStorage.getItem('sd_theme') || 'light'; }catch(e){}
+      try{ state.cart = JSON.parse(localStorage.getItem('sd_cart') || '{}'); }catch(e){ state.cart = {}; }
+      try{
+        var email = localStorage.getItem('sd_current_user');
+        if(email){
+          var users = getUsers();
+          var u = users.find(function(x){ return x.email === email; });
+          if(u) state.user = { name:u.name, email:u.email };
+        }
+      }catch(e){}
+    }
+    function saveCart(){ try{ localStorage.setItem('sd_cart', JSON.stringify(state.cart)); }catch(e){} }
+    function getUsers(){ try{ return JSON.parse(localStorage.getItem('sd_users') || '[]'); }catch(e){ return []; } }
+    function saveUsers(list){ try{ localStorage.setItem('sd_users', JSON.stringify(list)); }catch(e){} }
+    function saveOrder(order){
+      try{
+        var key = 'sd_orders_' + (state.user ? state.user.email : 'guest');
+        var list = JSON.parse(localStorage.getItem(key) || '[]');
+        list.push(order);
+        localStorage.setItem(key, JSON.stringify(list));
+      }catch(e){}
+    }
 
-    function openLightbox(src, kor, en, alt){
-      lbImg.src = src;
-      lbImg.alt = alt || en || kor || '';
-      lbKor.textContent = kor || '';
-      lbEn.textContent = en || '';
+    /* ---------------- i18n apply ---------------- */
+    function tr(key){ return (T[state.lang] && T[state.lang][key]) || T.en[key] || key; }
+
+    function applyLanguage(){
+      document.documentElement.setAttribute('lang', state.lang);
+      var dict = T[state.lang];
+      document.querySelectorAll('[data-i18n]').forEach(function(el){
+        var k = el.getAttribute('data-i18n');
+        if(dict[k] !== undefined){
+          el.style.transition = 'opacity .2s ease';
+          el.style.opacity = 0;
+          setTimeout(function(){ el.textContent = dict[k]; el.style.opacity = 1; }, 120);
+        }
+      });
+      renderFoodGrid();
+      renderCart();
+      buildLangGrid();
+      try{ localStorage.setItem('sd_lang', state.lang); }catch(e){}
+    }
+
+    window.__sdFallback = function(imgEl){
+      imgEl.onerror = null;
+      var kor = imgEl.getAttribute('data-kor') || '';
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="460">' +
+        '<rect width="100%" height="100%" fill="#7f9a4f"/>' +
+        '<text x="50%" y="50%" font-family="Georgia,serif" font-size="34" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">' + kor + '</text></svg>';
+      imgEl.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    };
+
+    function formatPrice(n){
+      var locale = LOCALE_TAG[state.lang] || 'en-US';
+      try{ return Number(n).toLocaleString(locale) + ' ₩'; }
+      catch(e){ return n + ' ₩'; }
+    }
+
+    /* ---------------- Theme ---------------- */
+    function applyTheme(){
+      if(state.theme === 'dark'){
+        document.body.setAttribute('data-theme','dark');
+      } else {
+        document.body.removeAttribute('data-theme');
+      }
+      var toggle = document.getElementById('theme-toggle');
+      var label = document.getElementById('theme-state-label');
+      if(toggle) toggle.classList.toggle('on', state.theme === 'dark');
+      if(label) label.textContent = state.theme === 'dark' ? tr('settings_theme_dark') : tr('settings_theme_light');
+      try{ localStorage.setItem('sd_theme', state.theme); }catch(e){}
+    }
+
+    /* ---------------- Toasts ---------------- */
+    function showToast(message){
+      var stack = document.getElementById('toast-stack');
+      var el = document.createElement('div');
+      el.className = 'toast';
+      el.innerHTML = '<span class="dot"></span><span></span>';
+      el.querySelector('span:last-child').textContent = message;
+      stack.appendChild(el);
+      requestAnimationFrame(function(){ el.classList.add('show'); });
+      setTimeout(function(){
+        el.classList.remove('show');
+        setTimeout(function(){ el.remove(); }, 400);
+      }, 2800);
+    }
+
+    /* ---------------- Modal / overlay helpers ---------------- */
+    var overlay = document.getElementById('overlay');
+    var openStack = [];
+
+    function openPanel(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      el.classList.add('show');
+      el.setAttribute('aria-hidden','false');
+      overlay.classList.add('show');
+      openStack.push(id);
+    }
+    function closePanel(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      el.classList.remove('show');
+      el.setAttribute('aria-hidden','true');
+      openStack = openStack.filter(function(x){ return x !== id; });
+      if(openStack.length === 0) overlay.classList.remove('show');
+    }
+    function closeAllPanels(){
+      openStack.slice().forEach(closePanel);
+    }
+    overlay.addEventListener('click', closeAllPanels);
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeAllPanels();
+    });
+    document.querySelectorAll('[data-close-modal]').forEach(function(btn){
+      btn.addEventListener('click', function(){ closePanel(btn.getAttribute('data-close-modal')); });
+    });
+
+    /* ---------------- Food grid ---------------- */
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.15 });
+
+    function renderFoodGrid(){
+      var grid = document.getElementById('food-grid');
+      grid.innerHTML = '';
+      FOOD_ITEMS.forEach(function(item, idx){
+        var fig = document.createElement('figure');
+        fig.className = 'food';
+        fig.style.transitionDelay = (idx * 60) + 'ms';
+        fig.innerHTML =
+          '<div class="imgwrap" data-open-lightbox="'+item.id+'">' +
+            '<img data-kor="'+item.kor+'" src="'+item.img+'" alt="'+tr(item.key)+'" loading="lazy" onerror="window.__sdFallback(this)">' +
+          '</div>' +
+          '<figcaption>' +
+            '<span class="en">'+tr(item.key)+'</span>' +
+            '<span class="korean">'+item.kor+'</span>' +
+            '<div class="price-row">' +
+              '<span class="price">'+formatPrice(item.price)+'</span>' +
+              '<button class="add-btn" data-add="'+item.id+'">' +
+                '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>' +
+                '<span>'+tr('add_to_cart')+'</span>' +
+              '</button>' +
+            '</div>' +
+          '</figcaption>';
+        grid.appendChild(fig);
+        revealObserver.observe(fig);
+      });
+
+      grid.querySelectorAll('[data-open-lightbox]').forEach(function(el){
+        el.addEventListener('click', function(){
+          var item = FOOD_ITEMS.find(function(f){ return f.id === el.getAttribute('data-open-lightbox'); });
+          openLightbox(item);
+        });
+      });
+      grid.querySelectorAll('[data-add]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          addToCart(btn.getAttribute('data-add'), btn);
+        });
+      });
+    }
+
+    /* ---------------- Lightbox ---------------- */
+    var lightbox = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lb-img');
+    var lbEn = document.getElementById('lb-en');
+    var lbKor = document.getElementById('lb-kor');
+    function openLightbox(item){
+      lbImg.setAttribute('data-kor', item.kor);
+      lbImg.onerror = function(){ window.__sdFallback(lbImg); };
+      lbImg.src = item.img;
+      lbImg.alt = tr(item.key);
+      lbEn.textContent = tr(item.key);
+      lbKor.textContent = item.kor;
       lightbox.classList.add('open');
       lightbox.setAttribute('aria-hidden','false');
     }
     function closeLightbox(){
       lightbox.classList.remove('open');
       lightbox.setAttribute('aria-hidden','true');
-      lbImg.src = '';
+    }
+    document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
+
+    /* ---------------- Cart ---------------- */
+    function cartCount(){
+      return Object.keys(state.cart).reduce(function(sum,id){ return sum + state.cart[id]; }, 0);
+    }
+    function cartTotal(){
+      return Object.keys(state.cart).reduce(function(sum,id){
+        var item = FOOD_ITEMS.find(function(f){ return f.id === id; });
+        return sum + (item ? item.price * state.cart[id] : 0);
+      }, 0);
+    }
+    function updateCartBadge(){
+      var badge = document.getElementById('cart-badge');
+      var count = cartCount();
+      badge.textContent = count;
+      badge.classList.toggle('show', count > 0);
+      badge.classList.remove('bump');
+      void badge.offsetWidth;
+      badge.classList.add('bump');
     }
 
-    foods.forEach((f, idx)=>{
-      const img = f.querySelector('img');
-      const kor = f.dataset.kor || f.querySelector('.korean')?.textContent || '';
-      const en = f.dataset.title || f.querySelector('.en')?.textContent || '';
-      f.addEventListener('click', ()=> openLightbox(img.src, kor, en, img.alt));
-      f.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(img.src, kor, en, img.alt);} });
+    function addToCart(id, sourceBtn){
+      state.cart[id] = (state.cart[id] || 0) + 1;
+      saveCart();
+      updateCartBadge();
+      renderCart();
+      showToast(tr('toast_added'));
+      if(sourceBtn) flyToCart(sourceBtn);
+    }
+    function changeQty(id, delta){
+      if(!state.cart[id]) return;
+      state.cart[id] += delta;
+      if(state.cart[id] <= 0) delete state.cart[id];
+      saveCart();
+      updateCartBadge();
+      renderCart();
+    }
+    function removeFromCart(id){
+      delete state.cart[id];
+      saveCart();
+      updateCartBadge();
+      renderCart();
+    }
+
+    function flyToCart(sourceBtn){
+      var cartBtn = document.getElementById('btn-cart');
+      var imgEl = sourceBtn.closest('.food').querySelector('img');
+      var srcRect = imgEl.getBoundingClientRect();
+      var dstRect = cartBtn.getBoundingClientRect();
+      var clone = imgEl.cloneNode();
+      clone.className = 'fly-thumb';
+      clone.style.left = srcRect.left + 'px';
+      clone.style.top = srcRect.top + 'px';
+      clone.style.width = srcRect.width + 'px';
+      clone.style.height = srcRect.height + 'px';
+      clone.style.opacity = '0.95';
+      document.body.appendChild(clone);
+      requestAnimationFrame(function(){
+        clone.style.left = (dstRect.left + dstRect.width/2 - 10) + 'px';
+        clone.style.top = (dstRect.top + dstRect.height/2 - 10) + 'px';
+        clone.style.width = '20px';
+        clone.style.height = '20px';
+        clone.style.opacity = '0.2';
+      });
+      setTimeout(function(){ clone.remove(); }, 750);
+    }
+
+    function renderCart(){
+      var body = document.getElementById('cart-body');
+      var foot = document.getElementById('cart-foot');
+      var ids = Object.keys(state.cart);
+      if(ids.length === 0){
+        body.innerHTML = '<div class="cart-empty">'+tr('cart_empty')+'</div>';
+        foot.style.display = 'none';
+        return;
+      }
+      foot.style.display = 'block';
+      body.innerHTML = '';
+      ids.forEach(function(id){
+        var item = FOOD_ITEMS.find(function(f){ return f.id === id; });
+        if(!item) return;
+        var qty = state.cart[id];
+        var row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML =
+          '<img data-kor="'+item.kor+'" src="'+item.img+'" alt="" onerror="window.__sdFallback(this)">' +
+          '<div class="info">' +
+            '<div class="name">'+(item.customName || tr(item.key))+'</div>' +
+            '<div class="sub">'+formatPrice(item.price)+'</div>' +
+            '<div class="qty-row">' +
+              '<button class="qty-btn" data-dec="'+id+'">−</button>' +
+              '<span>'+qty+'</span>' +
+              '<button class="qty-btn" data-inc="'+id+'">+</button>' +
+              '<button class="remove-btn" data-remove="'+id+'">✕</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="linetotal">'+formatPrice(item.price * qty)+'</div>';
+        body.appendChild(row);
+      });
+      document.getElementById('cart-total').textContent = formatPrice(cartTotal());
+
+      body.querySelectorAll('[data-inc]').forEach(function(b){ b.addEventListener('click', function(){ changeQty(b.getAttribute('data-inc'), 1); }); });
+      body.querySelectorAll('[data-dec]').forEach(function(b){ b.addEventListener('click', function(){ changeQty(b.getAttribute('data-dec'), -1); }); });
+      body.querySelectorAll('[data-remove]').forEach(function(b){ b.addEventListener('click', function(){ removeFromCart(b.getAttribute('data-remove')); }); });
+    }
+
+    document.getElementById('btn-cart').addEventListener('click', function(){ openPanel('drawer-cart'); });
+
+    /* ---------------- Auth ---------------- */
+    function refreshAuthUI(){
+      var out = document.getElementById('auth-logged-out');
+      var inn = document.getElementById('auth-logged-in');
+      if(state.user){
+        out.style.display = 'none';
+        inn.style.display = 'block';
+        document.getElementById('account-name').textContent = state.user.name;
+        document.getElementById('account-email').textContent = state.user.email;
+      } else {
+        out.style.display = 'block';
+        inn.style.display = 'none';
+      }
+    }
+
+    document.getElementById('btn-account').addEventListener('click', function(){
+      refreshAuthUI();
+      openPanel('modal-auth');
     });
 
-    lbClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e)=>{
-      if(e.target === lightbox) closeLightbox();
+    document.getElementById('tab-login').addEventListener('click', function(){
+      document.getElementById('tab-login').classList.add('active');
+      document.getElementById('tab-register').classList.remove('active');
+      document.getElementById('form-login').style.display = 'block';
+      document.getElementById('form-register').style.display = 'none';
     });
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape') closeLightbox();
+    document.getElementById('tab-register').addEventListener('click', function(){
+      document.getElementById('tab-register').classList.add('active');
+      document.getElementById('tab-login').classList.remove('active');
+      document.getElementById('form-register').style.display = 'block';
+      document.getElementById('form-login').style.display = 'none';
     });
+
+    function simpleHash(str){
+      var h = 0;
+      for(var i=0;i<str.length;i++){ h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
+      return String(h);
+    }
+
+    document.getElementById('form-login').addEventListener('submit', function(e){
+      e.preventDefault();
+      var email = document.getElementById('login-email').value.trim().toLowerCase();
+      var pass = document.getElementById('login-password').value;
+      var users = getUsers();
+      var u = users.find(function(x){ return x.email === email && x.pass === simpleHash(pass); });
+      var err = document.getElementById('login-error');
+      if(!u){ err.textContent = tr('err_login_fail'); return; }
+      err.textContent = '';
+      state.user = { name:u.name, email:u.email };
+      try{ localStorage.setItem('sd_current_user', u.email); }catch(ex){}
+      refreshAuthUI();
+      showToast(tr('toast_welcome_back'));
+      e.target.reset();
+    });
+
+    document.getElementById('form-register').addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = document.getElementById('reg-name').value.trim();
+      var email = document.getElementById('reg-email').value.trim().toLowerCase();
+      var pass = document.getElementById('reg-password').value;
+      var confirm = document.getElementById('reg-confirm').value;
+      var err = document.getElementById('register-error');
+      var users = getUsers();
+      if(pass !== confirm){ err.textContent = tr('err_reg_mismatch'); return; }
+      if(users.some(function(x){ return x.email === email; })){ err.textContent = tr('err_reg_exists'); return; }
+      err.textContent = '';
+      users.push({ name:name, email:email, pass:simpleHash(pass) });
+      saveUsers(users);
+      state.user = { name:name, email:email };
+      try{ localStorage.setItem('sd_current_user', email); }catch(ex){}
+      refreshAuthUI();
+      showToast(tr('toast_account_created'));
+      e.target.reset();
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', function(){
+      state.user = null;
+      try{ localStorage.removeItem('sd_current_user'); }catch(e){}
+      refreshAuthUI();
+      showToast(tr('toast_logged_out'));
+      closePanel('modal-auth');
+    });
+
+    /* ---------------- Checkout ---------------- */
+    function goCheckoutStep(step){
+      state.checkoutStep = step;
+      document.querySelectorAll('.co-step').forEach(function(p){
+        p.style.display = (parseInt(p.getAttribute('data-step-panel'),10) === step) ? 'block' : 'none';
+      });
+      document.querySelectorAll('.checkout-steps-nav span').forEach(function(s,i){
+        s.classList.toggle('active', i <= step);
+      });
+      if(step === 0) renderCheckoutSummary();
+    }
+
+    function renderCheckoutSummary(){
+      var el = document.getElementById('co-summary');
+      var ids = Object.keys(state.cart);
+      var html = '';
+      ids.forEach(function(id){
+        var item = FOOD_ITEMS.find(function(f){ return f.id === id; });
+        if(!item) return;
+        html += '<div class="co-summary-row"><span>'+(item.customName || tr(item.key))+' × '+state.cart[id]+'</span><span>'+formatPrice(item.price*state.cart[id])+'</span></div>';
+      });
+      html += '<div class="co-summary-total"><span>'+tr('cart_subtotal')+'</span><span>'+formatPrice(cartTotal())+'</span></div>';
+      el.innerHTML = html;
+    }
+
+    document.getElementById('btn-checkout').addEventListener('click', function(){
+      if(cartCount() === 0) return;
+      closePanel('drawer-cart');
+      goCheckoutStep(0);
+      if(state.user) document.getElementById('co-name').value = state.user.name;
+      openPanel('modal-checkout');
+    });
+
+    document.getElementById('co-next-0').addEventListener('click', function(){ goCheckoutStep(1); });
+    document.getElementById('co-back-1').addEventListener('click', function(){ goCheckoutStep(0); });
+    document.getElementById('co-back-2').addEventListener('click', function(){ goCheckoutStep(1); });
+
+    document.getElementById('form-checkout-details').addEventListener('submit', function(e){
+      e.preventDefault();
+      state.checkoutDetails = {
+        name: document.getElementById('co-name').value.trim(),
+        address: document.getElementById('co-address').value.trim(),
+        phone: document.getElementById('co-phone').value.trim()
+      };
+      goCheckoutStep(2);
+    });
+
+    document.getElementById('co-card').addEventListener('input', function(e){
+      var digits = e.target.value.replace(/\D/g,'').slice(0,16);
+      e.target.value = digits.replace(/(.{4})/g,'$1 ').trim();
+    });
+    document.getElementById('co-expiry').addEventListener('input', function(e){
+      var digits = e.target.value.replace(/\D/g,'').slice(0,4);
+      if(digits.length >= 3) e.target.value = digits.slice(0,2) + '/' + digits.slice(2);
+      else e.target.value = digits;
+    });
+    document.getElementById('co-cvc').addEventListener('input', function(e){
+      e.target.value = e.target.value.replace(/\D/g,'').slice(0,3);
+    });
+
+    document.getElementById('form-checkout-payment').addEventListener('submit', function(e){
+      e.preventDefault();
+      var card = document.getElementById('co-card').value.replace(/\s/g,'');
+      var expiry = document.getElementById('co-expiry').value;
+      var cvc = document.getElementById('co-cvc').value;
+      var err = document.getElementById('checkout-error');
+
+      if(card.length !== 16){ err.textContent = tr('err_card'); return; }
+      var m = expiry.match(/^(\d{2})\/(\d{2})$/);
+      if(!m || parseInt(m[1],10) < 1 || parseInt(m[1],10) > 12){ err.textContent = tr('err_expiry'); return; }
+      if(cvc.length !== 3){ err.textContent = tr('err_cvc'); return; }
+      err.textContent = '';
+
+      var orderNumber = 'SD-' + Date.now().toString().slice(-8);
+      var order = {
+        number: orderNumber,
+        date: new Date().toISOString(),
+        items: Object.keys(state.cart).map(function(id){
+          var item = FOOD_ITEMS.find(function(f){ return f.id === id; });
+          return { id:id, qty:state.cart[id], price:item ? item.price : 0 };
+        }),
+        total: cartTotal(),
+        details: state.checkoutDetails
+      };
+      saveOrder(order);
+      document.getElementById('order-number').textContent = tr('checkout_order_prefix') + ' ' + orderNumber;
+
+      state.cart = {};
+      saveCart();
+      updateCartBadge();
+      renderCart();
+
+      goCheckoutStep(3);
+      var svgCircle = document.querySelector('.success-check circle');
+      var svgPath = document.querySelector('.success-check path');
+      [svgCircle, svgPath].forEach(function(elm){
+        if(!elm) return;
+        elm.style.animation = 'none';
+        void elm.offsetWidth;
+        elm.style.animation = '';
+      });
+      e.target.reset();
+    });
+
+    document.getElementById('co-finish').addEventListener('click', function(){
+      closePanel('modal-checkout');
+      goCheckoutStep(0);
+    });
+
+    /* ---------------- Settings: language + theme ---------------- */
+    function buildLangGrid(){
+      var grid = document.getElementById('lang-grid');
+      grid.innerHTML = '';
+      Object.keys(LANG_META).forEach(function(code){
+        var opt = document.createElement('button');
+        opt.type = 'button';
+        opt.className = 'lang-opt' + (state.lang === code ? ' active' : '');
+        opt.innerHTML = '<span class="flag">'+LANG_META[code].flag+'</span><span>'+LANG_META[code].label+'</span>';
+        opt.addEventListener('click', function(){
+          state.lang = code;
+          applyLanguage();
+          applyTheme();
+        });
+        grid.appendChild(opt);
+      });
+    }
+    document.getElementById('theme-toggle').addEventListener('click', function(){
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+    });
+    document.getElementById('btn-settings').addEventListener('click', function(){ openPanel('modal-settings'); });
+    document.getElementById('btn-lang').addEventListener('click', function(){ openPanel('modal-settings'); });
+
+    /* ---------------- Nav misc ---------------- */
+    document.getElementById('logo-home').addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+    document.getElementById('nav-event').addEventListener('click', function(e){ e.preventDefault(); showToast(tr('toast_no_events')); });
+    document.getElementById('nav-support').addEventListener('click', function(e){ e.preventDefault(); showToast(tr('toast_support')); });
+    document.getElementById('nav-event-m').addEventListener('click', function(e){ e.preventDefault(); showToast(tr('toast_no_events')); closeMobileMenu(); });
+    document.getElementById('nav-support-m').addEventListener('click', function(e){ e.preventDefault(); showToast(tr('toast_support')); closeMobileMenu(); });
+    document.querySelector('.contact-btn').addEventListener('click', function(){ showToast(tr('toast_support')); });
+    document.getElementById('franchise-cta').addEventListener('click', function(e){ e.preventDefault(); });
+
+    var mobileMenu = document.getElementById('mobile-menu');
+    function openMobileMenu(){ mobileMenu.classList.add('show'); }
+    function closeMobileMenu(){ mobileMenu.classList.remove('show'); }
+    document.getElementById('btn-hamburger').addEventListener('click', openMobileMenu);
+    document.getElementById('mobile-close').addEventListener('click', closeMobileMenu);
+    mobileMenu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ closeMobileMenu(); });
+    });
+
+    /* ---------------- Franchise step scroll reveal ---------------- */
+    var stepObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry, i){
+        if(entry.isIntersecting){
+          entry.target.style.transitionDelay = (i * 80) + 'ms';
+          entry.target.classList.add('in-view');
+          stepObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.2 });
+    document.querySelectorAll('.step').forEach(function(el){ stepObserver.observe(el); });
+
+    /* ---------------- Init ---------------- */
+    loadState();
+    saveFoodItems();
+    applyLanguage();
+    applyTheme();
+    updateCartBadge();
+    refreshAuthUI();
+
+  })();
   </script>
 </body>
 </html>
